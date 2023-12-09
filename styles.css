@@ -7,8 +7,8 @@
 label {
 	font-weight: bold;
 	display: block;
-	margin-top: 10px;
-	margin-bottom: 5px;
+	margin-top: 15px;
+	margin-bottom: 5px !important;
 	font-family: "Inter";
 }
 
@@ -33,6 +33,43 @@ p {
 	margin-bottom: 20px;
 }
 
+.stacked-buttons {
+	margin-top: 20px !important;
+	font-weight: bold;
+	margin-right: 5%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-content: center;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+.save-changes-top {
+	margin: auto;
+	margin-right: 5% !important;
+	margin-left: 50px !important;
+	background-color: transparent !important;
+	border: 3px solid #0a2342 !important;
+	color: #0a2342 !important;
+}
+
+#preview-button {
+	margin-top: 20px !important;
+	margin: 20px 5% !important;
+	margin-bottom: 0;
+	margin-left: 50px !important;
+	background-color: lightskyblue;
+	font-weight: bold;
+	border: 0;
+	color: black;
+	width: 30vw;
+	padding: 5px 7px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
 .add-questions {
 	display: flex;
 	width: 100%;
@@ -54,7 +91,7 @@ p {
 	font-family: system-ui;
 	font-weight: 600;
 	font-size: max(min(2vw, 16px), 13px) !important;
-	color: midnightblue;
+	color: white;
 	line-height: 1;
 	/*	padding: 2px 5px 2px 5px;*/
 	/*	border-radius: 5px;*/
@@ -64,6 +101,7 @@ p {
 #add-question-button-bottom {
 	width: 45% !important;
 	display: flex;
+	background-color: #009e60 !important;
 	justify-items: center;
 	align-content: center;
 	align-items: center;
@@ -72,6 +110,7 @@ p {
 	padding: 5px 0;
 	margin-top: 5px;
 	font-size: max(min(2vw, 16px), 13px) !important;
+	color: white;
 }
 
 
@@ -504,7 +543,7 @@ div.nested-buttons button {
 	background: #FFFFFF00;
 
 	opacity: 1;
-	margin-bottom: 10px;
+	margin-bottom: 15px;
 	/*	margin: 10px 0 10px 0;*/
 	transition: opacity 1s ease-out-in, transform 1s ease-out-in, background 1s ease-out-in;
 	transform: translateY(0px);
