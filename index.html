@@ -53,7 +53,7 @@
 		<button id="save-button" onclick="updatePreview()">Refresh</button>
 		<button id="create-button" onclick="createForm()">Save Changes</button>
 	</div>
-	<div id=formContainer>
+	<div id="formContainer">
 		<form id="formPreview"></form>
 	</div>
 	<script>
@@ -62,7 +62,7 @@
 		window.onload = function() {
 			updatePreview();
 			form.addEventListener('input', validateForm);
-			//togglePreviewMode();
+			//togglePreviewMode(false);
 		};
 	</script>
 </body></html>
