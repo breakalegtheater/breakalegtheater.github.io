@@ -324,6 +324,7 @@ function updatePreview() {
 				break;
 			case 'fileUpload':
 				fieldElement = `<div class="upload-container">
+<p><span style=\'font-size: small; color: darkgrey;\'>First click the <b>Choose File</b> button, select your file to upload, and then click the green <span style=\'color: #009e60; font-weight: 800;\'>Upload</span> button. Make sure you see the phrase \'<b>Upload Successful</b>\' before continuing.</span></p>
     <input type="file" id="uploader_${field.fieldId}" >
     <button id="submit-btn" onclick="event.preventDefault(); uploadFile('${field.fieldId}');">UPLOAD</button>
     <input type="hidden" id="fileUrl_${field.fieldId}" name="${field.label}">
