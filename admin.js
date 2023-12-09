@@ -428,7 +428,7 @@ function updatePreview() {
 </tr>
 </table>
 <br>
-<button onclick="submitAndPay()" id="pay-button" style="cursor: pointer; text-align: center; height: 50px; border: 0; border-radius: 15px; font-weight: bolder; color: white; font-size: large; background: linear-gradient(-5deg, #009e60, #009e6080); width: 100%;">FINISH & PAY &rarr;</button>
+<button onclick="handleSubmit()" id="pay-button" style="cursor: pointer; text-align: center; height: 50px; border: 0; border-radius: 15px; font-weight: bolder; color: white; font-size: large; background: linear-gradient(-5deg, #009e60, #009e6080); width: 100%;">FINISH & PAY &rarr;</button>
 <div style="display: flex; flex-direction: row;">
 <img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/VISA@2x.png">
 <img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/MASTERCARD@2x.png">
