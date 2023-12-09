@@ -44,18 +44,25 @@
 			</div>
 
 		</div>
-		<button style="margin-top: 20px; margin-right: 5%; margin-left: 50px; background-color: transparent; border: 3px solid #009e60; color: #009e60;" id="create-button" onclick="createForm()">Save Changes</button>
+		<div class="stacked-buttons">
+			<button class="save-changes-top" id="create-button" onclick="createForm()">Save Changes</button>
+			<button id="preview-button" onclick="togglePreviewMode()">Preview</button>
+		</div>
 	</div>
 	<div id="bottom-panel">
 		<button id="save-button" onclick="updatePreview()">Refresh</button>
 		<button id="create-button" onclick="createForm()">Save Changes</button>
 	</div>
 	<div id=formContainer>
-		<div id="formPreview"></div>
+		<form id="formPreview"></form>
 	</div>
 	<script>
+		const form = document.getElementById('formPreview');
+		const submitBtn = document.getElementById('submit-button');
 		window.onload = function() {
 			updatePreview();
+			form.addEventListener('input', validateForm);
+			//togglePreviewMode();
 		};
 	</script>
 </body></html>
