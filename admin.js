@@ -308,19 +308,19 @@ function updatePreview() {
 				fieldElement = `<hr class="sleek-entrance">`;
 				break;
 			case 'shortText':
-				fieldElement = `<input class="sleek-entrance" type="text" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)"/>`;
+				fieldElement = `<input class="sleek-entrance" type="text" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" name="${field.label}" oninput="updatePlaceholder('${field.fieldId}', this.value)"/>`;
 				break;
 			case 'longText':
-				fieldElement = `<textarea class="sleek-entrance" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)"></textarea>`;
+				fieldElement = `<textarea name="${field.label}" class="sleek-entrance" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)"></textarea>`;
 				break;
 			case 'phone':
-				fieldElement = `<input class="sleek-entrance" type="tel" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" inputmode="numeric" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
+				fieldElement = `<input name="${field.label}" class="sleek-entrance" type="tel" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" inputmode="numeric" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
 				break;
 			case 'email':
-				fieldElement = `<input class="sleek-entrance" type="email" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
+				fieldElement = `<input name="${field.label}" class="sleek-entrance" type="email" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
 				break;
 			case 'number':
-				fieldElement = `<input class="sleek-entrance" type="number" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
+				fieldElement = `<input name="${field.label}" class="sleek-entrance" type="number" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
 				break;
 			case 'fileUpload':
 				fieldElement = `<div class="upload-container">
@@ -334,16 +334,16 @@ function updatePreview() {
   </div>`;
 				break;
 			case 'currency':
-				fieldElement = `<input class="sleek-entrance" type="text" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" pattern="^\d*(\.\d{0,2})?$" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
+				fieldElement = `<input name="${field.label}" class="sleek-entrance" type="text" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" pattern="^\d*(\.\d{0,2})?$" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
 				break;
 			case 'dateWithoutTime':
-				fieldElement = `<input class="sleek-entrance" type="date" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" />`;
+				fieldElement = `<input name="${field.label}" class="sleek-entrance" type="date" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" />`;
 				break;
 			case 'dateWithTime':
-				fieldElement = `<input class="sleek-entrance" type="datetime-local" ${field.isRequired ? "required" : ""} placeholder="${field.label}" />`;
+				fieldElement = `<input name="${field.label}" class="sleek-entrance" type="datetime-local" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" />`;
 				break;
 			case 'dropdown':
-				fieldElement = `<select class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}">`;
+				fieldElement = `<select name="${field.label}" class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}">`;
 				fieldElement += `<label for="${field.label}">${field.label}</label>`
 				fieldElement += `<option value="">Choose an option...</option>`;
 				field.options.forEach((option, i) => {
@@ -353,14 +353,14 @@ function updatePreview() {
 				actions += `<button class="add-option" onclick="addOption('${field.fieldId}')">Edit Options</button>`;
 				break;
 			case 'time':
-				fieldElement = `<input class="sleek-entrance" type="time" ${field.isRequired ? "required" : ""} placeholder="${field.label}" />`;
+				fieldElement = `<input class="sleek-entrance" type="time" ${field.isRequired ? "required" : ""} placeholder="${field.label}" name="${field.label}" />`;
 				break;
 			case 'checkboxGroup':
 				field.options.forEach((option, i) => {
 					const inputType = field.fieldType === 'checkboxGroup' ? 'checkbox' : 'radio';
 					fieldElement += `
     <div class="checkbox-group">
-      <input type="${inputType}" ${field.isRequired ? "required" : ""} id="${field.fieldId}-${i}" />
+      <input type="${inputType}" name="${field.label}" ${field.isRequired ? "required" : ""} id="${field.fieldId}-${i}" />
       <label for="${field.fieldId}-${i}">${option}</label>
 <div class="nested-buttons">
       <button onclick="removeOption('${field.fieldId}', ${i})">×</button>
@@ -390,10 +390,10 @@ function updatePreview() {
 				actions += `<button class="add-option" onclick="addOption('${field.fieldId}')">Add Options Here</button>`;
 				break;
 			case 'multiDate':
-				fieldElement = `<input class="sleek-entrance" ${field.isRequired ? "required" : ""} type="date" placeholder="${field.label}" /><button>Add More</button>`;
+				fieldElement = `<input name="${field.label}" class="sleek-entrance" ${field.isRequired ? "required" : ""} type="date" placeholder="${field.placeholder}" /><button>Add More</button>`;
 				break;
 			case 'multiTime':
-				fieldElement = `<input type="time" ${field.isRequired ? "required" : ""} placeholder="${field.label}" /><button>Add More</button>`;
+				fieldElement = `<input name="${field.label}" type="time" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" /><button>Add More</button>`;
 				break;
 			case 'payment':
 				fieldElement = `
@@ -427,6 +427,8 @@ function updatePreview() {
   </td>
 </tr>
 </table>
+<input type="hidden" id="payment-status" name="Payment Status" value="NOT PAID">
+<input type="hidden" id="payment-amount" name="Payment Amount" value="$${(Number.parseFloat(Number.parseFloat(field.options[0].amount).toFixed(2))).toLocaleString("en-US",{style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2})}">
 <br>
 <button onclick="handleSubmit()" id="pay-button" style="cursor: pointer; text-align: center; height: 50px; border: 0; border-radius: 15px; font-weight: bolder; color: white; font-size: large; background: linear-gradient(-5deg, #009e60, #009e6080); width: 100%;">FINISH & PAY &rarr;</button>
 <div style="display: flex; flex-direction: row;">
