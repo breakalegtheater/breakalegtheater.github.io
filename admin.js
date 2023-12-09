@@ -700,7 +700,9 @@ function removeContentEditable() {
 	}
 }
 
-function togglePreviewMode(escape = true) {
+
+
+function togglePreviewMode(admin = false) {
 
 	const actionButtons = document.querySelectorAll(".action-buttons");
 	const nestedButtons = document.querySelectorAll(".nested-buttons");
@@ -745,7 +747,7 @@ function togglePreviewMode(escape = true) {
 	cssAdjustments.setAttribute("id","cssAdjustments");
 	document.body.appendChild(cssAdjustments);
 
-	if (escape) {
+	if (admin == true) {
 		let escapeBanner = document.createElement("div");
 		escapeBanner.innerHTML = `<a id="exitPreview" onclick="updatePreview()" style="background-color: #0a2342; cursor: pointer; position: fixed; width: 100%; top: 0; color: white; text-decoration: none; font-weight: bold; padding: 15px; text-align: center;">YOU ARE IN PREVIEW MODE — CLICK HERE TO EXIT.</a>`;
 		document.body.appendChild(escapeBanner);
