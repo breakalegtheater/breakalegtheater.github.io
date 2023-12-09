@@ -53,54 +53,6 @@ const fileUploadWidget = `<div id="upload-container">
 <div id="success" style="display: none;">Upload Successful!</div>
 </div>`;
 
-//const paymentWidget = `
-//<div id="payment-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-//<br>
-//<table width="100%" border="0">
-//  <tr>
-//  <td class="label" style="border-top-left-radius: 10px;">
-//    Name:
-//  </td>
-//  <td class="value" style="border-top-right-radius: 10px; font-weight: bold;">
-//    ${fields.find(field => field.fieldType === "payment").options[0].productName.trim()}
-//  </td>
-//</tr>
-//<tr>
-//  <td class="label">
-//    Description:
-//  </td>
-//  <td class="value" style="font-size: small; font-style: italic;">
-//    ${fields.find(field => field.fieldType === "payment").options[0].productDescription.trim()}
-//  </td>
-//</tr>
-//<tr>
-//  <td class="label" style="border-bottom-left-radius: 10px;">
-//    Amount Due:
-//  </td>
-//  <td class="value" style="border-bottom-right-radius: 10px;">
-//    <b>
-//      $${fields.find(field => field.fieldType === "payment").options[0].amount.toFixed(2)}
-//    </b>
-//  </td>
-//</tr>
-//</table>
-//<br>
-//<button onclick="submitAndPay()" id="pay-button" style="cursor: pointer; text-align: center; height: 50px; border: 0; border-radius: 15px; font-weight: bolder; color: white; font-size: large; background: linear-gradient(-5deg, #009e60, #009e6080); width: 100%;">FINISH & PAY &rarr;</button>
-//<div style="display: flex; flex-direction: row;">
-//<img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/VISA@2x.png">
-//<img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/MASTERCARD@2x.png">
-//<img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/AMEX@2x.png">
-//<img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/DISCOVER@2x.png">
-//<img class="card" src="https://cdn.freebiesupply.com/logos/large/2x/apple-pay-payment-mark-logo-black-and-white.png">
-//<img class="card" style="max-width: 45px;" src="https://lh3.googleusercontent.com/YD4iH-kP9NPKvJ5_4zJ86mCE2tX-7kIPgYmgMBKEX2Vm7tzOIShpUIerJNxbcfWTlCpoveuyYhHt0D4D5g_d7_5OKREsB2bkqvPGgw=s0">
-//</div>
-//</div>
-//<style>
-//.submit-button {
-//display: none !important;
-//}
-//</style>
-//`;
 
 function addFieldTop() {
 	const fieldType = document.getElementById("fieldType").value;
@@ -137,14 +89,12 @@ function addFieldTop() {
 
 		// Inserting as the second field in the list, since the first field is usually the title.
 		if (fields.length > 0) {
-			if (["paragraph","heading","title"].includes(fields[0].fieldType)) {
+			if (["paragraph", "heading", "title"].includes(fields[0].fieldType)) {
 				fields = [fields[0], field, ...fields.slice(1)];
+			} else {
+				fields = [field, ...fields];
 			}
-			else {
-				fields = [field, ...fields];	
-			}
-		}
-		else {
+		} else {
 			fields.push(field);
 		}
 
@@ -373,7 +323,14 @@ function updatePreview() {
 				fieldElement = `<input class="sleek-entrance" type="number" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
 				break;
 			case 'fileUpload':
-				fieldElement = fileUploadWidget;
+				fieldElement = `<div class="upload-container">
+    <input type="file" id="uploader_${field.fieldId}" >
+    <button id="submit-btn" onclick="event.preventDefault(); uploadFile('${field.fieldId}');">UPLOAD</button>
+    <input type="hidden" id="fileUrl_${field.fieldId}" name="${field.label}">
+    <div id="uploading_${field.fieldId}" style="display: none;"><img src="https://iili.io/JCCz287.gif" border="0" style="width: 40%; display:block; align-self: center; margin: 0 auto;">Uploading... Please wait a moment.</div>
+    <div id="error_${field.fieldId}" style="display: none;">Oh no! An error occurred. Would you mind trying again?</div>
+    <div id="success_${field.fieldId}" style="display: none;">Upload Successful!</div>
+  </div>`;
 				break;
 			case 'currency':
 				fieldElement = `<input class="sleek-entrance" type="text" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" pattern="^\d*(\.\d{0,2})?$" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
@@ -514,18 +471,13 @@ ${actions}
 	}, 0);
 
 	formPreview.innerHTML += `
-<button style="display: none;" id="submit-button">Submit</button>
+<button style="display: none;" id="submit-button" onclick="handleSubmit()">Submit</button>
 `;
 	setupRemoveField();
 	handlePhoneInputs();
 	console.log(fields);
 	disableMoveButtonsOnEnds();
 }
-
-// Call updatePreview() during the initial load
-window.onload = function () {
-	updatePreview();
-};
 
 function updatePlaceholder(fieldId, newPlaceholder) {
 	const field = fields.find(f => f.fieldId === fieldId);
@@ -585,15 +537,19 @@ buttons.forEach((button) => {
 });
 
 
-function uploadFile() {
-	let fileInput = document.getElementById('file-input');
+//scripts for file upload
+
+function uploadFile(fieldId) {
+	let fileInput = document.getElementById("uploader_" + fieldId);
 	let files = fileInput.files;
 	if (files.length === 0) {
 		alert("Please select a file to upload.");
 		return;
 	}
 
-	document.getElementById("uploading").style.display = "block";
+	document.getElementById("uploading_" + String(fieldId)).style.display = "block";
+	document.getElementById("success_" + String(fieldId)).style.display = "none";
+	document.getElementById("error_" + String(fieldId)).style.display = "none";
 
 	// Step 1: Get the best server
 	getBestServer().then(server => {
@@ -602,15 +558,8 @@ function uploadFile() {
 			console.log("Upload Response:", uploadResponse); // Logging upload response
 
 			// Step 3: Enable CDN access using fileId as contentId
-			setCDNAccess(uploadResponse.fileId).then(cdnAccessResponse => {
+			setCDNAccess(uploadResponse.fileId, fieldId).then(cdnAccessResponse => {
 				console.log("CDN Access Response:", cdnAccessResponse); // Logging CDN access response
-
-				// Send the postMessage to the parent window with CDN access response
-				window.parent.postMessage({
-					type: 'file-upload',
-					fileData: cdnAccessResponse,
-					contentId: uploadResponse.fileId
-				}, '*'); // Replace '*' with your domain for security
 			});
 		});
 	}).catch(error => console.error(error));
@@ -648,7 +597,7 @@ function uploadFileToServer(server, file) {
 		});
 }
 
-function setCDNAccess(contentId) {
+function setCDNAccess(contentId, fieldId) {
 	return fetch('https://api.gofile.io/setOption', {
 			method: 'PUT',
 			headers: {
@@ -664,15 +613,19 @@ function setCDNAccess(contentId) {
 		.then(response => response.json())
 		.then(data => {
 			if (data.status === 'ok') {
-				document.getElementById("uploading").style.display = "none";
-				document.getElementById("success").style.display = "block";
+				document.getElementById("fileUrl_" + String(fieldId)).value = data.data;
+				document.getElementById("uploading_" + String(fieldId)).style.display = "none";
+				document.getElementById("success_" + String(fieldId)).style.display = "block";
 				return data.data;
 			} else {
-				document.getElementById("error").style.display = "block";
+				document.getElementById(`"error_${fieldId}"`).style.display = "block";
+				document.getElementById(`"success_${fieldId}"`).style.display = "none";
+				document.getElementById(`"uploading_${fieldId}"`).style.display = "none";
 				throw new Error('Failed to set CDN access');
 			}
 		});
 }
+
 
 function handlePhoneInputs() {
 
@@ -696,8 +649,130 @@ function disableMoveButtonsOnEnds() {
 		document.getElementById(`moveFieldDownButton-${lastField.fieldId}`).style.display = "none";
 
 		document.getElementById(`moveFieldUpButton-${firstField.fieldId}`).style.display = "none";
+	}
+}
 
+function validateForm() {
+	const requiredFields = form.querySelectorAll('[required]');
+	let isFormValid = true;
+
+	requiredFields.forEach(field => {
+		if (field.value.trim() === '') {
+			isFormValid = false;
+		}
+	});
+
+	return isFormValid;
+}
+
+function handleSubmit() {
+	// Prevent the default form submission
+	event.preventDefault();
+	console.log("Submit button clicked");
+
+	// Assuming your form has an ID 'formPreview'
+	var form = document.getElementById('formPreview');
+
+	// Collect form data
+	let formData = {};
+	new FormData(form).forEach((value, key) => formData[key] = value);
+
+	// Log and post the message
+	console.log(JSON.stringify(formData));
+
+	if (validateForm() == true) {
+		window.parent.postMessage(formData, '*');
+		console.log("Form Submit Successful!");
+	} else {
+		alert("One or more required fields haven't been filled out yet.");
 	}
 
+}
 
+// This function finds all elements with the contenteditable="true" attribute and removes the attribute
+function removeContentEditable() {
+	// Find all elements with the contenteditable attribute set to true
+	var editableElements = document.querySelectorAll('[contenteditable="true"]');
+
+	// Iterate over each element and remove the contenteditable attribute
+	for (var i = 0; i < editableElements.length; i++) {
+		editableElements[i].removeAttribute('contenteditable');
+	}
+}
+
+function togglePreviewMode(escape = true) {
+
+	const actionButtons = document.querySelectorAll(".action-buttons");
+	const nestedButtons = document.querySelectorAll(".nested-buttons");
+	const submitButton = document.getElementById("submit-button");
+	const adminPanel = document.getElementById("adminPanel");
+	const bottomPanel = document.getElementById("bottom-panel");
+	const formPreview = document.getElementById("formPreview");
+	const paymentButtons = document.querySelectorAll(".payment-option-buttons");
+	const optionButtons = document.querySelectorAll(".add-option");
+
+	removeContentEditable();
+	if (fields.map(field => field.fieldType).includes("payment")) {
+		submitButton.style.display = "none";
+	} else {
+		submitButton.style.display = "block";
+	}
+
+	adminPanel.style.display = "none";
+	bottomPanel.style.display = "none";
+	formPreview.style.marginTop = "0";
+
+
+	nestedButtons.forEach(button => {
+		button.style.display = "none";
+	});
+
+	actionButtons.forEach(button => {
+		button.style.display = "none";
+	});
+
+	paymentButtons.forEach(element => {
+		element.style.display = "none";
+	});
+
+	optionButtons.forEach(element => {
+		element.style.display = "none";
+	});
+
+	let cssAdjustments = document.createElement("style");
+	
+	cssAdjustments.innerHTML = `div.sleek-entrance.visible:hover {background: transparent;}`;
+	cssAdjustments.setAttribute("id","cssAdjustments");
+	document.body.appendChild(cssAdjustments);
+
+	if (escape) {
+		let escapeBanner = document.createElement("div");
+		escapeBanner.innerHTML = `<a id="exitPreview" onclick="updatePreview()" style="background-color: #0a2342; cursor: pointer; position: fixed; width: 100%; top: 0; color: white; text-decoration: none; font-weight: bold; padding: 15px; text-align: center;">YOU ARE IN PREVIEW MODE — CLICK HERE TO EXIT.</a>`;
+		document.body.appendChild(escapeBanner);
+		formPreview.style.marginTop = "40px";
+
+		escapeBanner.addEventListener('click', () => {
+			submitButton.style.display = "none";
+			adminPanel.style.display = "";
+			bottomPanel.style.display = "";
+			formPreview.style.marginTop = "";
+			nestedButtons.forEach(button => {
+				button.style.display = "";
+			});
+			actionButtons.forEach(button => {
+				button.style.display = "";
+			});
+
+			paymentButtons.forEach(element => {
+				element.style.display = "";
+			});
+
+			optionButtons.forEach(element => {
+				element.style.display = "";
+			});
+			
+			document.getElementById("cssAdjustments").innerHTML = "";
+			
+		});
+	}
 }
