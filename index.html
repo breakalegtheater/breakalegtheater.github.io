@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Form Builder</title>
+	<script>
+		let fields = [];
+	</script>
+	<script src="admin.js"></script>
+	<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+	<div id="adminPanel">
+		<div id="navBar">
+			<div class="add-questions">
+				<select id="fieldType">
+					<option value="none" disabled hidden>Choose a Question/Field to Add</option>
+					<option value="title">Form Title</option>
+					<option value="heading">Section Heading</option>
+					<option value="paragraph">Paragraph Text</option>
+					<option value="divider">Divider Line</option>
+					<option value="shortText" selected>Short Text Question</option>
+					<option value="longText">Long Text Question</option>
+					<option value="phone">Phone Number</option>
+					<option value="email">Email Question</option>
+					<option value="number">Number Question</option>
+					<option value="fileUpload">File Upload</option>
+					<option value="currency">Currency Question (USD)</option>
+					<option value="dateWithoutTime">Date Question Without Time</option>
+					<option value="dateWithTime">Date Question With Time</option>
+					<option value="dropdown">Dropdown Selection</option>
+					<option value="time">Time Question</option>
+					<option value="checkboxGroup">Checkbox Group</option>
+					<option value="radioGroup">Radio Group</option>
+					<!--  <option value="multiDate">Multi-Date Question</option> -->
+					<!--  <option value="multiTime">Multi-Time Question</option> -->
+					<option value="payment">Collect Payment</option>
+				</select>
+				<div class="add-buttons">
+					<button id="add-question-button-top" onclick="addFieldTop()"><span class="arrow-icon">⤴️</span><br>Add First</button>
+					<button id="add-question-button-bottom" onclick="addFieldBottom()">Add Last<br><span class="arrow-icon">⤵️</span></button>
+				</div>
+			</div>
+
+		</div>
+		<button style="margin-top: 20px; margin-right: 5%; margin-left: 50px; background-color: transparent; border: 3px solid #009e60; color: #009e60;" id="create-button" onclick="createForm()">Save Changes</button>
+	</div>
+	<div id="bottom-panel">
+		<button id="save-button" onclick="updatePreview()">Refresh</button>
+		<button id="create-button" onclick="createForm()">Save Changes</button>
+	</div>
+	<div id=formContainer>
+		<div id="formPreview"></div>
+	</div>
+	<script>
+		window.onload = function() {
+			updatePreview();
+		};
+	</script>
+</body></html>
