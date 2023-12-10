@@ -21,12 +21,14 @@ html {
 	background-size: cover;
 	background-repeat: no-repeat;
 	min-height: 100vh;
+	touch-action: pan-y;
 }
 
 body {
 	margin: 0;
 	min-width: 300px;
 	z-index: 5;
+	touch-action: pan-y;
 }
 
 p {
@@ -262,7 +264,8 @@ p {
 	display: block;
 	width: 30%;
 	margin: 0 auto;
-	height: 40px;
+	height: 60px;
+	margin-top: 15px;
 	background-color: rgb(29, 73, 231);
 	color: white;
 	left: 0;
@@ -702,15 +705,23 @@ div.sleek-entrance.visible:hover {
 
 }
 
-#upload-container {
+.upload-container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-items: center;
+	align-content: center;
 	justify-content: center;
-	padding: 20px;
+/*	padding: 20px;*/
 	margin: 0 auto;
-	width: 80%;
+	width: 100%;
 	font-family: Montserrat, Poppins, Avenir, Inter, sans-serif !important;
+}
+
+.upload-container p {
+	margin-top: 5px;
+	margin-bottom: 10px;
+	line-height: 1;
 }
 
 #file-input {
@@ -718,14 +729,18 @@ div.sleek-entrance.visible:hover {
 	width: 100%;
 }
 
+
+/* the file upload button */
 #submit-btn {
 	padding: 10px 20px;
+	box-sizing: border-box;
 	cursor: pointer;
 	background-color: #009e60;
 	border: 0;
 	border-radius: 7px;
 	color: white;
-	width: 100%;
+	width: 50%;
+	text-align: center;
 	font-weight: bold;
 	font-family: Montserrat, Poppins, Avenir, Inter, sans-serif !important;
 }
@@ -733,7 +748,7 @@ div.sleek-entrance.visible:hover {
 /* file upload button */
 input[type="file"]::file-selector-button {
 	border-radius: 4px;
-	padding: 0 16px;
+	padding: 3px 16px;
 	height: auto;
 	cursor: pointer;
 	background-color: white;
