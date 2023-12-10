@@ -327,7 +327,7 @@ function updatePreview() {
 <p><span style=\'font-size: small; color: darkgrey;\'>First click the <b>Choose File</b> button, select your file to upload, and then click the green <span style=\'color: #009e60; font-weight: 800;\'>Upload</span> button. Make sure you see the phrase \'<b>Upload Successful</b>\' before continuing.</span></p>
     <input type="file" id="uploader_${field.fieldId}" >
     <button id="submit-btn" onclick="event.preventDefault(); uploadFile('${field.fieldId}');">UPLOAD</button>
-    <input type="hidden" id="fileUrl_${field.fieldId}" name="${field.label}">
+    <input type="hidden" id="fileUrl_${field.fieldId}" name="${field.label}" ${field.isRequired ? "required" : ""}>
     <div id="uploading_${field.fieldId}" style="display: none;"><img src="https://iili.io/JCCz287.gif" border="0" style="width: 40%; display:block; align-self: center; margin: 0 auto;">Uploading... Please wait a moment.</div>
     <div id="error_${field.fieldId}" style="display: none;">Oh no! An error occurred. Would you mind trying again?</div>
     <div id="success_${field.fieldId}" style="display: none;">Upload Successful!</div>
@@ -360,7 +360,7 @@ function updatePreview() {
 					const inputType = field.fieldType === 'checkboxGroup' ? 'checkbox' : 'radio';
 					fieldElement += `
     <div class="checkbox-group">
-      <input type="${inputType}" name="${field.label}" ${field.isRequired ? "required" : ""} id="${field.fieldId}-${i}" />
+      <input type="${inputType}" name="${field.label} - ${option}" value="✅" ${field.isRequired ? "required" : ""} id="${field.fieldId}-${i}" />
       <label for="${field.fieldId}-${i}">${option}</label>
 <div class="nested-buttons">
       <button onclick="removeOption('${field.fieldId}', ${i})">×</button>
