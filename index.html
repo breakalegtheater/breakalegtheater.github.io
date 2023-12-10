@@ -4,7 +4,7 @@
 <head>
 	<title>Form Builder</title>
 	<script>
-		let fields = [];
+		let fields = [{'isRequired':false,'label':'Form Title','position':0,'fieldType':'title','fieldId':'title-1699865255058'},{'isRequired':false,'label':'Enter instructions here.','position':1,'fieldType':'paragraph','fieldId':'paragraph-1699865255059'}];
 	</script>
 	<script src="admin.js"></script>
 	<link rel="stylesheet" href="styles.css">
@@ -46,7 +46,7 @@
 		</div>
 		<div class="stacked-buttons">
 			<button class="save-changes-top" id="create-button" onclick="createForm()">Save Changes</button>
-			<button id="preview-button" onclick="togglePreviewMode()">Preview</button>
+			<button id="preview-button" onclick="togglePreviewMode(true)">Preview</button>
 		</div>
 	</div>
 	<div id="bottom-panel">
