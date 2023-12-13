@@ -390,7 +390,20 @@ function updatePreview() {
 				actions += `<button class="add-option" onclick="addOption('${field.fieldId}')">Add Options Here</button>`;
 				break;
 			case 'multiDate':
-				fieldElement = `<input name="${field.label}" class="sleek-entrance" ${field.isRequired ? "required" : ""} type="date" placeholder="${field.placeholder}" /><button>Add More</button>`;
+				fieldElement = `<br><br>
+					<div id="multidate-${field.fieldId}" class="sleek-entrance">
+			<div class="input-container f${field.fieldId}">
+				<!-- Date entries will be added here -->
+			</div>
+			
+			<button type="button" class="multi-date-add-more-times-button" id="addDate-${field.fieldId}" onclick="addDateInput('${field.fieldId}')"> + Add Dates & Times</button>
+			<div id="userDateOutput-${field.fieldId}" class="user-date-output f${field.fieldId}"></div>
+		</div>
+		<br>
+		<br>
+		<br>
+		<textarea hidden name="${field.label}" ${field.isRequired ? "required" : ""} style="width: 100%; height: 200px;" id="aggregatedDates-${field.fieldId}"></textarea>`;
+		
 				break;
 			case 'multiTime':
 				fieldElement = `<input name="${field.label}" type="time" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" /><button>Add More</button>`;
@@ -745,9 +758,9 @@ function togglePreviewMode(admin = false) {
 	});
 
 	let cssAdjustments = document.createElement("style");
-	
+
 	cssAdjustments.innerHTML = `div.sleek-entrance.visible:hover {background: transparent;}`;
-	cssAdjustments.setAttribute("id","cssAdjustments");
+	cssAdjustments.setAttribute("id", "cssAdjustments");
 	document.body.appendChild(cssAdjustments);
 
 	if (admin == true) {
@@ -775,9 +788,197 @@ function togglePreviewMode(admin = false) {
 			optionButtons.forEach(element => {
 				element.style.display = "";
 			});
-			
+
 			document.getElementById("cssAdjustments").innerHTML = "";
-			
+
 		});
 	}
 }
+
+// Functions for Multi-Date Widget
+function formatDateWithDay(dateString) {
+	var date = new Date(toUTC(dateString, "00:00"));
+	if (!isNaN(date.getTime())) {
+		// Options to include day of the week in the format
+		var options = {
+			weekday: 'long',
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			timeZone: "America/New_York"
+		};
+		return date.toLocaleString('en-US', options);
+	}
+	return dateString;
+}
+
+function convertToStandardFormat(longFormDateString) {
+	return moment(longFormDateString, "dddd, MMMM D, YYYY").format('YYYY-MM-DD');
+}
+
+function toUTC(dateInput, timeInput) {
+	// Combine date and time in 'YYYY-MM-DD HH:mm' format
+	var dateTimeString = dateInput + ' ' + timeInput;
+
+	// Create a moment object with the specified time in Eastern Time
+	var momentET = moment.tz(dateTimeString, "YYYY-MM-DD HH:mm", "America/New_York");
+
+	// Convert the moment object to UTC
+	return momentET.utc().format();
+}
+
+
+function updateAggregatedDates(fieldId) {
+	var dateEntries = document.querySelectorAll(`.date-entry.f${fieldId}`);
+	var dateArray = [];
+
+	dateEntries.forEach(function (entry) {
+		var dateInput = entry.querySelector('.dateInput').value;
+		var startTime = entry.querySelector('.startTime').value;
+		var endTime = entry.querySelector('.endTime').value;
+		var allDay = entry.querySelector('.allDay').checked;
+
+		console.log("Date Input:", dateInput); // Debug
+		console.log("Start Time:", startTime); // Debug
+		console.log("End Time:", endTime); // Debug
+		console.log("All Day:", allDay); // Debug
+
+		if (dateInput) {
+			var standardDate = convertToStandardFormat(dateInput);
+			var startTimeFormatted = allDay ? '00:00' : startTime || "00:00";
+			var endTimeFormatted = allDay ? '23:59' : endTime || "23:59";
+
+			var startDateTimeUTC = toUTC(standardDate, startTimeFormatted);
+			var endDateTimeUTC = toUTC(standardDate, endTimeFormatted);
+
+			dateArray.push({
+				startDateTime: startDateTimeUTC,
+				endDateTime: endDateTimeUTC
+			});
+
+			dateArray = dateArray.sort((a, b) => new Date(a.startDateTime) - new Date(b.startDateTime));
+		}
+	});
+
+	console.log("Date Array:", dateArray); // Final array debug
+	document.getElementById(`aggregatedDates-${fieldId}`).value = JSON.stringify(dateArray, null, 2);
+	var userOutput = `<b>You have selected the following dates:</b><br><br><table class="multi-date-output-table" style="text-align: left;">` + dateArray.map((date, index) => `<tr><td>${index+1}.</td><td style="font-weight: bold;">${new Date(date.startDateTime).toLocaleString("en-US", {weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "America/New_York"})}</td><td style="font-style: italic;">${new Date(date.startDateTime).toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York"}) + " to " +  new Date(date.endDateTime).toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York"}) == "12:00 AM to 11:59 PM" ? "All Day" : new Date(date.startDateTime).toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York"}) + " to " +  new Date(date.endDateTime).toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York"})}</td>`).join(`</tr>`) + `</table>`;
+	var userDateOutput = document.getElementById(`userDateOutput-${fieldId}`);
+	userDateOutput.innerHTML = userOutput;
+}
+
+
+function addDateInput(fieldId) {
+	var container = document.querySelector(`.input-container.f${fieldId}`);
+	var dateEntryDiv = document.createElement('div');
+	dateEntryDiv.classList.add("date-entry");
+	dateEntryDiv.classList.add(`f${fieldId}`);
+	dateEntryDiv.setAttribute("id",`dateEntryDiv-${fieldId}`);
+	
+//	dateEntryDiv.className = `date-entry f${fieldId}`;
+
+	var dateInput = document.createElement('input');
+	dateInput.type = 'text';
+	dateInput.className = 'dateInput';
+	dateInput.placeholder = 'Select a date';
+	dateInput.setAttribute('oninput', `updateAggregatedDates("${fieldId}")`);
+	dateInput.setAttribute('onchange', `updateAggregatedDates("${fieldId}")`);
+
+	var datePicker = new Pikaday({
+		field: dateInput,
+		format: 'YYYY-MM-DD',
+		onSelect: function () {
+			if (this.getMoment()) {
+				dateInput.value = formatDateWithDay(this.getMoment().format('YYYY-MM-DD'));
+				updateAggregatedDates(fieldId);
+			}
+		}
+	});
+
+	var dateTimes = document.createElement('div');
+	dateTimes.setAttribute("id", `dateTimes-${fieldId}`);
+
+	var timeInputs = document.createElement('div');
+	timeInputs.setAttribute("id", `timeInputs-${fieldId}`);
+
+	var startTimeLabel = document.createElement('label');
+	startTimeLabel.className = 'startTimeLabel';
+	startTimeLabel.innerHTML = `Start Time`;
+	var startTime = document.createElement('input');
+	startTime.type = 'time';
+	startTime.className = 'startTime';
+	startTime.setAttribute("value", '00:00');
+	startTime.setAttribute("onchange", `updateAggregatedDates("${fieldId}")`);
+
+	var endTimeLabel = document.createElement('label');
+	endTimeLabel.className = 'endTimeLabel';
+	endTimeLabel.innerHTML = `End Time`;
+	var endTime = document.createElement('input');
+	endTime.type = 'time';
+	endTime.className = 'endTime';
+	endTime.setAttribute("value", '23:59');
+	endTime.setAttribute("onchange", `updateAggregatedDates("${fieldId}")`);
+
+
+	var checkboxLabel = document.createElement('label');
+	checkboxLabel.classList.add("checkbox-label");
+	checkboxLabel.innerHTML = `<span>All Day <span style="font-weight: normal;">(Uncheck For Specific Time)</span></span>`;
+	var allDayCheckbox = document.createElement('input');
+	allDayCheckbox.setAttribute("checked", "");
+	allDayCheckbox.type = 'checkbox';
+	allDayCheckbox.className = 'allDay';
+	allDayCheckbox.setAttribute("onchange", `updateAggregatedDates("${fieldId}")`);
+
+	startTime.disabled = endTime.disabled = allDayCheckbox.checked;
+	startTime.style.display = startTime.disabled ? "none" : "block";
+	endTime.style.display = startTime.disabled ? "none" : "block";
+	startTimeLabel.style.display = startTime.disabled ? "none" : "block";
+	endTimeLabel.style.display = startTime.disabled ? "none" : "block";
+
+
+	allDayCheckbox.onchange = function () {
+		startTime.disabled = endTime.disabled = allDayCheckbox.checked;
+		startTime.style.display = startTime.disabled ? "none" : "block";
+		endTime.style.display = startTime.disabled ? "none" : "block";
+		startTimeLabel.style.display = startTime.disabled ? "none" : "block";
+		endTimeLabel.style.display = startTime.disabled ? "none" : "block";
+
+	};
+
+
+	var removeButtonDiv = document.createElement('div');
+	removeButtonDiv.className = "multi-date-remove-button-container";
+	var removeButton = document.createElement('button');
+	removeButton.type = 'button';
+	removeButton.className = "multi-date-remove-button";
+	removeButton.textContent = 'Remove';
+//	removeButton.onclick = function () {
+//		dateEntryDiv.remove();
+//		updateAggregatedDates(fieldId);
+//	};
+	removeButton.setAttribute("onclick",`document.getElementById("dateEntryDiv-${fieldId}").remove(); updateAggregatedDates("${fieldId}")`);
+	removeButtonDiv.appendChild(removeButton);
+
+	dateEntryDiv.appendChild(dateInput);
+	checkboxLabel.appendChild(allDayCheckbox);
+	dateTimes.appendChild(checkboxLabel);
+	timeInputs.appendChild(startTimeLabel);
+	timeInputs.appendChild(startTime);
+	timeInputs.appendChild(endTimeLabel);
+	timeInputs.appendChild(endTime);
+	dateEntryDiv.appendChild(dateTimes);
+	dateEntryDiv.appendChild(timeInputs);
+
+	dateEntryDiv.appendChild(removeButtonDiv);
+	container.appendChild(dateEntryDiv);
+
+//	dateInput.addEventListener('change', updateAggregatedDates);
+//	startTime.addEventListener('change', updateAggregatedDates);
+//	endTime.addEventListener('change', updateAggregatedDates);
+//	allDayCheckbox.addEventListener('change', updateAggregatedDates);
+}
+
+//document.getElementById('addDate').addEventListener('click', addDateInput);
+
+// Initial date entry setup
+//addDateInput();
