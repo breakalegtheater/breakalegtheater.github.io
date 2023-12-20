@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Form Builder</title>
+	<script>
+		let fields = [{'isRequired':false,'label':'Form Title','position':0,'fieldType':'title','fieldId':'title-1699865255058'},{'isRequired':false,'label':'Enter instructions here.','position':1,'fieldType':'paragraph','fieldId':'paragraph-1699865255059'}];
+	</script>
+	<script src="https://MomentJS.com/downloads/moment.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
+
+	<script src="admin.js"></script>
+	<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+	<div id="adminPanel">
+		<div id="navBar">
+			<div class="add-questions">
+				<select id="fieldType">
+					<option value="none" disabled hidden>Choose a Question/Field to Add</option>
+					<option value="title">Form Title</option>
+					<option value="heading">Section Heading</option>
+					<option value="paragraph">Paragraph Text</option>
+					<option value="divider">Divider Line</option>
+					<option value="shortText" selected>Short Text Question</option>
+					<option value="longText">Long Text Question</option>
+					<option value="phone">Phone Number</option>
+					<option value="email">Email Question</option>
+					<option value="number">Number Question</option>
+					<option value="fileUpload">File Upload</option>
+					<option value="currency">Currency Question (USD)</option>
+					<option value="dateWithoutTime">Date Question Without Time</option>
+					<option value="dateWithTime">Date Question With Time</option>
+					<option value="dropdown">Dropdown Selection</option>
+					<option value="time">Time Question</option>
+					<option value="checkboxGroup">Checkbox Group</option>
+					<option value="radioGroup">Radio Group</option>
+					<option value="multiDate">Multi-Date Question</option>
+					<!--  <option value="multiTime">Multi-Time Question</option> -->
+					<option value="payment">Collect Payment</option>
+				</select>
+				<div class="add-buttons">
+					<button id="add-question-button-top" onclick="addFieldTop()"><span class="arrow-icon">⤴️</span><br>Add First</button>
+					<button id="add-question-button-bottom" onclick="addFieldBottom()">Add Last<br><span class="arrow-icon">⤵️</span></button>
+				</div>
+			</div>
+
+		</div>
+		<div class="stacked-buttons">
+			<button class="save-changes-top" id="create-button" onclick="createForm()">Save Changes</button>
+			<button id="preview-button" onclick="togglePreviewMode(true)">Preview</button>
+		</div>
+	</div>
+	<div id="bottom-panel">
+		<button id="save-button" onclick="updatePreview()">Refresh</button>
+		<button id="create-button" onclick="createForm()">Save Changes</button>
+	</div>
+	<div id="formContainer">
+		<form id="formPreview"></form>
+	</div>
+	<script>
+		const form = document.getElementById('formPreview');
+		const submitBtn = document.getElementById('submit-button');
+		window.onload = function() {
+			updatePreview();
+			form.addEventListener('input', validateForm);
+			//togglePreviewMode(false);
+		};
+	</script>
+</body></html>
