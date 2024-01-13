@@ -663,7 +663,7 @@ ${actions}
 	handlePhoneInputs();
 	console.log(fields);
 	disableMoveButtonsOnEnds();
-	selectPaymentOption(0);
+	// selectPaymentOption(0);
 }
 
 function updatePlaceholder(fieldId, newPlaceholder) {
