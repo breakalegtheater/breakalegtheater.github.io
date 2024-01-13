@@ -222,7 +222,7 @@ function editInstallments(event, fieldId) {
   	event.stopPropagation();
 	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	let field = fields.find(field => field.fieldId === fieldId);
-	customPrompt('<h2>Enter a price for this payment option.</h2>', field.options[index]["installments"]).then((value) => {
+	customPrompt('<h2>Enter the total number of installments that the customer will pay.</h2>', field.options[index]["installments"]).then((value) => {
 		console.log(value); // This will log the input value or null
 		if (value !== null && !isNaN(Number.parseInt(value))) {
 			let cleanedValue = Number.parseInt(value)
