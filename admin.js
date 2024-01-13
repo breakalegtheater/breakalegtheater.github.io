@@ -141,32 +141,124 @@ function addFieldBottom() {
 	}
 }
 
-function editProductName(fieldId) {
+function editProductName(event, fieldId) {
+	event.preventDefault();
+  	event.stopPropagation();
 	let field = fields.find(field => field.fieldId === fieldId);
-	let name = prompt("Enter Product Name: ", field.options[0].productName);
-	if (name) {
-		field.options[0].productName = name.trim();
-		updatePreview();
-	}
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	customPrompt(`<h1>Enter Product Name:</h1> `, field.options[index].productName).then((value) => {
+		if (value) {
+			console.log(value); // This will log the input value or null	
+			field.options[index].productName = value.trim();
+			updatePreview();
+			selectPaymentOption(index);
+		}
+	});
+	
 }
 
-function editProductDescription(fieldId) {
+function editProductDescription(event, fieldId) {
+	event.preventDefault();
+  	event.stopPropagation();
 	let field = fields.find(field => field.fieldId === fieldId);
-	let description = prompt("Enter Product Description: ", field.options[0].productDescription);
-	if (description) {
-		field.options[0].productDescription = description.trim();
-		updatePreview();
-	}
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
+	customPrompt("Enter Product Description: ", field.options[index].productDescription).then((value) => {
+		console.log(value); // This will log the input value or null
+		if (value) {
+			field.options[index].productDescription = value.trim();
+			updatePreview();
+			selectPaymentOption(index);
+		}
+	});
 }
 
-function editPrice(fieldId) {
+
+function editPrice(event, fieldId) {
+	event.preventDefault();
+  	event.stopPropagation();
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	let field = fields.find(field => field.fieldId === fieldId);
-	let amount = prompt("Enter Price: ", field.options[0].amount);
-	if (amount && !isNaN(Number.parseFloat(amount))) {
-		field.options[0]["amount"] = Number.parseFloat(Number.parseFloat(amount).toFixed(2));
-		updatePreview();
-	}
+	customPrompt('<h2>Enter a price for this payment option.</h2>', field.options[index]["amount"]).then((value) => {
+		console.log(value); // This will log the input value or null
+		if (value !== null && !isNaN(Number.parseFloat(value))) {
+			field.options[index]["amount"] = Number.parseFloat(Number.parseFloat(value).toFixed(2));
+			updatePreview();
+			selectPaymentOption(index);
+		}
+	});
 }
+
+function editInstallments(event, fieldId) {
+	event.preventDefault();
+  	event.stopPropagation();
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
+	let field = fields.find(field => field.fieldId === fieldId);
+	customPrompt('<h2>Enter a price for this payment option.</h2>', field.options[index]["installments"]).then((value) => {
+		console.log(value); // This will log the input value or null
+		if (value !== null && !isNaN(Number.parseInt(value))) {
+			let cleanedValue = Number.parseInt(value)
+			field.options[index]["installments"] = cleanedValue;
+			if (cleanedValue <= 1) {
+				field.options[index].installments = "";
+				field.options[index].frequency = "";
+			}
+			else if (cleanedValue <= 1 && (!field.options[index].frequency || ['month', 'year', 'day', 'week'].includes(field.options.index.frequency))) {
+				field.options[index].frequency = "";
+			}
+			updatePreview();
+			selectPaymentOption(index);
+		}
+	});
+}
+
+function editPaymentPlan(event, fieldId) {
+	event.preventDefault();
+  	event.stopPropagation();
+	let field = fields.find(field => field.fieldId === fieldId);
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	customPrompt(`
+	<h1>Choose Payment Plan Type</h1> 
+	<p>Enter any of the following options in the box below:</p> 
+	<table width="100%" style="text-align: center">
+	<thead>
+	<th>Option to Type:</th>
+	<th>Definition:</th>
+	</thead>
+	<tr>
+		<td><code style="font-size: 18px; font-weight: bold;">Once</code></td>
+		<td>For a single payment only.</td>
+	</tr>
+	<tr>
+		<td><code style="font-size: 18px; font-weight: bold;">Day</code></td>
+		<td>For daily payments.</td>
+	</tr>
+	<tr>
+		<td><code style="font-size: 18px; font-weight: bold;">Week</code></td>
+		<td>For weekly payments.</td>
+	</tr>
+	<tr>
+		<td><code style="font-size: 18px; font-weight: bold;">Month</code></td>
+		<td>For a monthly payments.</td>
+	</tr>
+	<tr>
+		<td><code style="font-size: 18px; font-weight: bold;">Year</code></td>
+		<td>For yearly payments.</td>
+	</tr>
+	</table>`, field?.options[index]?.frequency || "One-Time").then((value) => {
+		if (value) {
+			console.log(value); // This will log the input value or null
+			let cleanedValue = 	value.trim().toLowerCase();
+			if (!cleanedValue || cleanedValue === "once") {
+				cleanedValue = ""
+			}
+			field.options[index].frequency = cleanedValue;
+			updatePreview();
+			selectPaymentOption(index);
+		}
+	});
+	
+}
+
 
 function setupRemoveField() {
 	var buttons = document.querySelectorAll('.deleteFieldButton');
@@ -409,42 +501,80 @@ function updatePreview() {
 				fieldElement = `<input name="${field.label}" type="time" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" /><button>Add More</button>`;
 				break;
 			case 'payment':
-				fieldElement = `
-<div id="payment-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-<br>
-<table width="100%" border="0">
-  <tr>
-  <td class="label" style="border-top-left-radius: 10px;">
-    Name:
-  </td>
-  <td class="value" style="border-top-right-radius: 10px; font-weight: bold;">
-    ${field.options[0].productName.trim()}
-  </td>
-</tr>
-<tr>
-  <td class="label">
-    Description:
-  </td>
-  <td class="value" style="font-size: small; font-style: italic;">
-    ${field.options[0].productDescription.trim()}
-  </td>
-</tr>
-<tr>
-  <td class="label" style="border-bottom-left-radius: 10px;">
-    Amount Due:
-  </td>
-  <td class="value" style="border-bottom-right-radius: 10px;">
-    <b>
-      $${(Number.parseFloat(Number.parseFloat(field.options[0].amount).toFixed(2))).toLocaleString("en-US",{style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2})}
-    </b>
-  </td>
-</tr>
-</table>
+
+				fieldElement = `<div id="payment-container""><br>`;
+				
+				field.options.sort((a,b) => b.amount-a.amount).forEach((option, index) => {
+
+					let amount = `$${(Number.parseFloat(Number.parseFloat(field.options[index].amount).toFixed(2))).toLocaleString("en-US",{style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+					let todayWords = new Date(Date.now() + 0).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+					let today = new Date();
+					let installments = option.installments || 0;
+					
+					let endDate = ( function()  {
+						if (option.frequency === "week") {
+							return new Date(today.setDate(today.getDate() + (installments * 7 - 1))).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+						}
+						else if (option.frequency === "month") {
+							return new Date(today.setMonth(today.getMonth() + installments - 1)).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+						}
+						else if (option.frequency === "year") {
+							return new Date(today.setFullYear(today.getFullYear() + installments - 1)).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+						}
+						else if (option.frequency === "day") {
+							return new Date(today.setDate(today.getDate() + installments - 1)).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+						}
+						else {
+							return null;
+						}
+					} ) ();
+
+					let thePaymentMessage = `<br>Pay <b>${amount} now (${todayWords})</b>, and your card will be auto-charged <b>${amount} each ${option.frequency}</b> until <b>${endDate}</b>.`;
+					if (!installments || !option?.frequency) {
+						thePaymentMessage = `<br>Pay ${amount} now in full.`;
+					}
+
+					fieldElement += `
+					<div id="payment-option-index-${index}" class="payment-plan-container" onclick="selectPaymentOption(${index})">
+						<table border-collapse="collapse" align="center" style="text-align: center;">
+  							<tr>
+								<td colspan=2 class="label" style="border-top-right-radius: 10px; border-top-left-radius: 10px; font-weight: bold;">
+									${option.productName.trim()}
+								</td>
+							</tr>
+							<tr>  
+							<td class="value" colspan=2 style="font-size: small; font-style: italic;">
+								${option.productDescription.trim()}
+							</td>
+							</tr>
+							<tr>
+							<td class="value" colspan=2 style="border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;">
+								<b>
+								${amount}
+								${option?.frequency && !option?.frequency.includes("one") && !option?.frequency.includes("once") && ['week','month','year', 'day'].includes(option?.frequency?.trim()) ? "/ "+option?.frequency : "One-Time"}
+								</b>
+								
+								${option.installments > 1 && "<br>" + option.installments + " Installments" || ""}
+								
+								<div style="font-size: smaller">${thePaymentMessage}</div>
+							</td>
+							</tr>
+						</table>
+					</div>
+				
+`;
+				})
+				
+				fieldElement += `</div>
+
+
+
 <input type="hidden" id="payment-status" name="Payment Status" value="NOT PAID">
 <input type="hidden" id="payment-amount" name="Payment Amount" value="$${(Number.parseFloat(Number.parseFloat(field.options[0].amount).toFixed(2))).toLocaleString("en-US",{style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2})}">
+<textarea style="display: none" ${field.isRequired ? "required" : ""} id="selected-payment-option" name="Payment Option Selected" value=""></textarea>
 <br>
 <button onclick="handleSubmit()" id="pay-button" style="cursor: pointer; text-align: center; height: 50px; border: 0; border-radius: 15px; font-weight: bolder; color: white; font-size: large; background: linear-gradient(-5deg, #009e60, #009e6080); width: 100%;">FINISH & PAY &rarr;</button>
-<div style="display: flex; flex-direction: row;">
+<div style="display: flex; flex-direction: row; align-items: center; align-content: center; justify-items: center; justify-content: center;">
 <img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/VISA@2x.png">
 <img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/MASTERCARD@2x.png">
 <img class="card" src="https://assets.nflxext.com/siteui/acquisition/payment/ffe/paymentpicker/AMEX@2x.png">
@@ -452,6 +582,7 @@ function updatePreview() {
 <img class="card" src="https://cdn.freebiesupply.com/logos/large/2x/apple-pay-payment-mark-logo-black-and-white.png">
 <img class="card" style="max-width: 43px;" src="https://lh3.googleusercontent.com/YD4iH-kP9NPKvJ5_4zJ86mCE2tX-7kIPgYmgMBKEX2Vm7tzOIShpUIerJNxbcfWTlCpoveuyYhHt0D4D5g_d7_5OKREsB2bkqvPGgw=s0"><br>
 </div><br>
+<p style="text-align: center;" id="selectedPaymentMessage"></p>
 </div>
 <style>
 submit-button {
@@ -459,11 +590,13 @@ display: none !important;
 }
 </style>
 `;
-				actions += `
-    <div class="payment-option-buttons">
-      <button onclick="editProductName('${field.fieldId}')">Edit Product Name</button>
-      <button onclick="editProductDescription('${field.fieldId}')">Edit Product Description</button>
-      <button onclick="editPrice('${field.fieldId}')">Edit Price</button>
+actions += `
+    <div class="payment-option-buttons" style="opacity: 1;">
+      <button href="#" onclick="editProductName(event, '${field.fieldId}')">Edit Product Name<br><span id="selectedPaymentTitle" style="font-size: smaller; font-style: italic; font-weight: lighter;">${getSelectedPaymentOption().productName}</span></button>
+      <button href="#" onclick="editProductDescription(event, '${field.fieldId}')">Edit Product Description<br><span id="selectedPaymentDescription" style="font-size: smaller; font-style: italic; font-weight: lighter;">${getSelectedPaymentOption().productDescription}</span></button>
+      <button href="#" onclick="editPrice(event, '${field.fieldId}')">Edit Price<br><span id="selectedPaymentPrice" style="font-size: smaller; font-style: italic; font-weight: lighter;">$${getSelectedPaymentOption().amount}</span></button>
+	  <button href="#" onclick="editPaymentPlan(event, '${field.fieldId}')">Edit Payment Plan<br><span id="selectedPaymentPlan" style="font-size: smaller; font-style: italic; font-weight: lighter;">${getSelectedPaymentOption()?.frequency || "One-Time"}</span></button>
+	  <button href="#" onclick="editInstallments(event, '${field.fieldId}')">Edit Installment Count<br><span id="selectedPaymentInstallments" style="font-size: smaller; font-style: italic; font-weight: lighter;">${getSelectedPaymentOption()?.installments || ""}</span></button>
     </div>
   `;
 				break;
@@ -493,6 +626,7 @@ ${actions}
 	handlePhoneInputs();
 	console.log(fields);
 	disableMoveButtonsOnEnds();
+	selectPaymentOption(0);
 }
 
 function updatePlaceholder(fieldId, newPlaceholder) {
@@ -982,3 +1116,103 @@ function addDateInput(fieldId) {
 
 // Initial date entry setup
 //addDateInput();
+
+function getSelectedPaymentOption() {
+	let index = 0;
+	if (document.querySelector(".selected")) {
+		index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	}
+
+	const paymentOptions = fields.find(field => field.fieldType === "payment").options.sort((a,b) => b.amount - a.amount);
+	return paymentOptions[index] || paymentOptions[0];
+}
+
+function selectPaymentOption(index=0) {
+	
+	const paymentOptions = fields.find(field => field.fieldType === "payment").options.sort((a,b) => b.amount - a.amount);
+	const selectedOption = paymentOptions[index];
+	const selectedAmount = (Number.parseFloat(Number.parseFloat(selectedOption.amount).toFixed(2))).toLocaleString("en-US",{style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2})
+	document.getElementById("selected-payment-option").value = JSON.stringify(selectedOption);
+	document.querySelectorAll(".payment-plan-container").forEach(element => {
+		element.classList.remove("selected");
+	})
+	document.getElementById(`payment-option-index-${index}`).classList.add("selected");
+	
+	document.getElementById("selectedPaymentMessage").innerHTML=`Click FINISH & PAY to finalize payment for <b>$${(!selectedOption?.installments || !selectedOption.frequency) ? selectedAmount : selectedAmount + "/" + selectedOption.frequency + "</b> (" + selectedOption.installments + " total installments)"}.`;
+	document.getElementById("selectedPaymentPrice").textContent=`($${selectedAmount})`;
+	document.getElementById("selectedPaymentDescription").textContent=`(${selectedOption?.productDescription})`;
+	document.getElementById("selectedPaymentTitle").textContent=`(${selectedOption?.productName})`;
+	document.getElementById("selectedPaymentPlan").textContent=`(${!selectedOption?.frequency ? "One-Time" : selectedOption?.frequency === "day" ? "daily" : selectedOption?.frequency + "ly"})`;
+	document.getElementById("selectedPaymentInstallments").textContent=`(${!selectedOption?.installments ? "None" : selectedOption?.installments})`;
+
+	return index;
+	
+}
+
+
+function customPrompt(question, defaultValue = '') {
+  return new Promise((resolve) => {
+    // Create modal elements
+    const modal = document.createElement('div');
+    const modalContent = document.createElement('div');
+    const questionText = document.createElement('p');
+    const inputField = document.createElement('input');
+	inputField.setAttribute("id","inputField");
+    const okButton = document.createElement('button');
+	okButton.setAttribute("id","okButton");
+    const cancelButton = document.createElement('button');
+
+    // Set attributes and text
+    modal.setAttribute('id', 'customModal');
+    modalContent.setAttribute('class', 'modal-content');
+    questionText.innerHTML = question;
+    inputField.value = defaultValue;
+    okButton.textContent = 'OK';
+    cancelButton.textContent = 'Cancel';
+
+    // Append elements
+    modalContent.appendChild(questionText);
+    modalContent.appendChild(inputField);
+    modalContent.appendChild(okButton);
+    modalContent.appendChild(cancelButton);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    // Style the modal (you can move this to an external CSS file)
+    modal.style.display = 'block';
+    modal.style.position = 'fixed';
+    modal.style.zIndex = '1';
+    modal.style.left = '0';
+    modal.style.top = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.4)';
+    modalContent.style.backgroundColor = '#fefefe';
+    modalContent.style.margin = '175px auto';
+    modalContent.style.padding = '20px';
+    modalContent.style.border = '1px solid #888';
+    modalContent.style.width = '80%';
+	modalContent.style.borderRadius = '15px';
+	modalContent.style.boxShadow = '0px 6px 25px rgba(0,0,0,0.2)';
+
+	document.getElementById("inputField").addEventListener("keyup", function(event) {
+		event.preventDefault();
+		if (event.keyCode === 13) {
+			document.getElementById("okButton").click();
+		}
+	})
+
+    // Event listeners
+    okButton.onclick = () => {
+      resolve(inputField.value.trim());
+      document.body.removeChild(modal);
+    };
+
+    cancelButton.onclick = () => {
+      resolve(null);
+      document.body.removeChild(modal);
+    };
+  });
+}
+
+
