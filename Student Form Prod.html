@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>Form Builder</title>
+</head>
+
+<body>
+	<div id=formContainer>
+		<form id="formPreview"></form>
+	</div>
+</body></html>
+
+<script>
+  let fields = [{'isRequired':false,'label':'\'Chicago: Teen Edition\' Audition Form','position':0,'fieldType':'title','fieldId':'title-1699865255058'},{'isRequired':false,'label':'Pronouns:','position':1,'placeholder':'','fieldType':'shortText','fieldId':'1701542496927'},{'isRequired':false,'label':'Please list any roles you\'d especially like to be considered for: ','position':2,'placeholder':'','fieldType':'shortText','fieldId':'1701361546500'},{'isRequired':true,'label':'If not cast in your preferred role, would you accept another role?','position':3,'placeholder':'Please write YES or NO.','fieldType':'shortText','fieldId':'1701361575166'},{'isRequired':false,'label':'Upload Audition Video here: <br><span style=\'font-size: small; color: darkgrey;\'>First click the <b>Choose File</b> button, select your file to upload, and then click the green <span style=\'color: #009e60; font-weight: 800;\'>Upload</span> button. Make sure you see the phrase \'<b>Upload Successful</b>\' before continuing.</span>','position':4,'placeholder':'','fieldType':'fileUpload','fieldId':'1701305697245'},{'isRequired':false,'label':'Or you may post a YouTube link to video here (optional)','position':5,'placeholder':'','fieldType':'shortText','fieldId':'1701305793518'},{'isRequired':false,'label':'Upload Resume (optional) <br><span style=\'font-size: small; color: darkgrey;\'>First click the <b>Choose File</b> button, select your file to upload, and then click the green <span style=\'color: #009e60; font-weight: 800;\'>Upload</span> button. Make sure you see the phrase \'<b>Upload Successful</b>\' before continuing.</span>','position':6,'placeholder':'','fieldType':'fileUpload','fieldId':'1701361622899'},{'isRequired':false,'label':'Upload headshot (optional) <br><span style=\'font-size: small; color: darkgrey;\'>First click the <b>Choose File</b> button, select your file to upload, and then click the green <span style=\'color: #009e60; font-weight: 800;\'>Upload</span> button. Make sure you see the phrase \'<b>Upload Successful</b>\' before continuing.</span>','position':7,'placeholder':'','fieldType':'fileUpload','fieldId':'1701361639571'},{'isRequired':false,'label':'Please describe dance experience, if any: ','position':8,'placeholder':'','fieldType':'longText','fieldId':'1701361669003'},{'isRequired':false,'label':'Do you have any conflicts on callback days (Jan 6 and/or Jan 7)? Please describe:','position':9,'placeholder':'List conflicts or write \'N/A\' here.','fieldType':'longText','fieldId':'1701361694310'},{'isRequired':false,'label':'Please list any known major conflicts with weekend rehearsals during Jan-March.<br><span style=\'font-size: small; color: grey;\'><i>*Note: specific conflicts will be collected upon enrollment.</i></span>','position':10,'placeholder':'List conflicts or write \'N/A\' here.','fieldType':'longText','fieldId':'1701361744280'}];
+  
+  // Call updatePreview() during the initial load
+  window.onload = function() {
+    updatePreview();
+  };
+  
+  const defaultLabels = {
+    "phone": "Enter your phone number:",
+    "email": "Email Address",
+    "date": "Choose a date:",
+    "dateWithTime": "Choose a date & time:",
+    "dropdown": "Select an option:",
+    "radioGroup": "Select an option:",
+    "number": "Enter a number",
+    "multiDate": "Add dates:",
+    "multiTime": "Add times:",
+    "currency": "Enter an amount:",
+    "paragraph": "Type some text here.",
+    "shortText": "Type Question Here:",
+    "longText": "Ask a question:",
+    "title": "Add a title.",
+    "heading": "Add a heading.",
+    "time": "Choose a time:",
+    "checkboxGroup": "Select choices:",
+    "fileUpload": "Upload File(s):"
+  };
+  
+  function addField() {
+    const fieldType = document.getElementById("fieldType").value;
+    if (fieldType != "none") {
+      const fieldId = Date.now().toString();
+      const label = defaultLabels[fieldType]; // Using the default label based on fieldType
+      
+      let field = {
+        fieldType,
+        fieldId,
+        label,
+        position: fields.length,
+        isRequired: false,
+        placeholder: ""
+      };
+      
+      
+      if (fieldType === "checkboxGroup" || fieldType === "radioGroup") {
+        const options = []; // Set default options if needed
+        field.options = options;
+      }
+      
+      fields.push(field);
+      updatePreview();
+    }
+  }
+  
+  function setupRemoveField() {
+    var buttons = document.querySelectorAll('.deleteFieldButton');
+    
+    buttons.forEach(button => {
+      var clicks = 0;
+      var timer = null;
+      
+      button.addEventListener('click', function(event) {
+        var fieldId = this.getAttribute('data-fieldId');
+        clicks++;
+        
+        if (clicks === 1) {
+          timer = setTimeout(function() {
+            clicks = 0;
+          }, 300);
+        } else if (clicks === 2) {
+          clearTimeout(timer);
+          clicks = 0;
+          
+          fields = fields.filter(field => field.fieldId !== fieldId);
+          
+          setTimeout(() => {
+            updatePreview();
+          }, 400);
+          
+          console.log('Button double clicked!');
+        }
+        
+        event.preventDefault();
+      });
+    });
+  }
+  
+  // Run the setup function after updating the DOM
+  setupRemoveField();
+  
+  function addOption(fieldId) {
+    const option = prompt("Enter a new option:");
+    const field = fields.find(field => field.fieldId === fieldId);
+    
+    if (field.fieldType === 'radioGroup') {
+      // Ensure all radio buttons in this group have the same name
+      field.options.push({ label: option.trim(), name: field.fieldId });
+    } else {
+      field.options.push(option.trim());
+    }
+    
+    updatePreview();
+  }
+  
+  function moveField(fieldId, direction) {
+    const index = fields.findIndex(field => field.fieldId === fieldId);
+    if ((index === 0 && direction === -1) || (index === fields.length - 1 && direction === 1)) {
+      return;
+    }
+    const temp = fields[index];
+    fields[index] = fields[index + direction];
+    fields[index + direction] = temp;
+    updatePreview();
+  }
+  
+  function removeOption(fieldId, index) {
+    const field = fields.find(field => field.fieldId === fieldId);
+    field.options.splice(index, 1);
+    updatePreview();
+  }
+  
+  function moveOption(fieldId, index, direction) {
+    const field = fields.find(field => field.fieldId === fieldId);
+    const option = field.options[index];
+    
+    if ((index === 0 && direction === -1) || (index === field.options.length - 1 && direction === 1)) {
+      return;
+    }
+    
+    field.options[index] = field.options[index + direction];
+    field.options[index + direction] = option;
+    updatePreview();
+  }
+  
+  function updatePreview() {
+    const formPreview = document.getElementById("formPreview");
+    formPreview.innerHTML = "";
+    
+    fields.forEach((field, index) => {
+      let fieldElement = "";
+      let actions = ``; //onclick="removeField('${field.fieldId}')"
+      
+      // Make all labels or text content editable, including title, heading, and paragraph.
+      const editableContent = ["title","heading","paragraph"].includes(field.fieldType) ? "" : `<label class="sleek-entrance"><span class="editable-content sleek-entrance"  oninput="updateContent('${field.fieldId}', this.innerText)">${field.label || field.content}</span></label>`;
+      
+      
+      switch(field.fieldType) {
+        case 'title':
+          fieldElement = `<h1 class="sleek-entrance" ${field.isRequired ? "required" : ""} oninput="updatePlaceholder('${field.fieldId}', this.value)" onblur="updateField(${index}, 'label', this.textContent)">${field.label}</h1>`;
+          break;
+        case 'heading':
+          fieldElement = `<h2 class="sleek-entrance" ${field.isRequired ? "required" : ""} oninput="updatePlaceholder('${field.fieldId}', this.value)" onblur="updateField(${index}, 'label', this.textContent)">${field.label}</h2>`;
+          break;
+        case 'paragraph':
+          fieldElement = `<p class="sleek-entrance" ${field.isRequired ? "required" : ""} oninput="updatePlaceholder('${field.fieldId}', this.value)" onblur="updateField(${index}, 'label', this.textContent)">${field.label}</p>`;
+          break;
+        case 'shortText':
+          fieldElement = `<input class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}" type="text" placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)"/>`;
+          break;
+        case 'longText':
+          fieldElement = `<textarea class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}" placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.placeholder)"></textarea>`;
+          break;
+        case 'phone':
+          fieldElement = `<input class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}" type="tel" placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" />`;
+          break;
+        case 'email':
+          fieldElement = `<input class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}" type="email" placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
+          break;
+        case 'number':
+          fieldElement = `<input class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}" type="number" placeholder="${field.placeholder || ''}" oninput="updatePlaceholder('${field.fieldId}', this.value)" />`;
+          break;
+        case 'fileUpload':
+          fieldElement = `<div class="upload-container">
+    <input type="file" id="uploader_${field.fieldId}" >
+    <button id="submit-btn" onclick="event.preventDefault(); uploadFile('${field.fieldId}');">UPLOAD</button>
+    <input type="hidden" id="fileUrl_${field.fieldId}" name="${field.label}">
+    <div id="uploading_${field.fieldId}" style="display: none;"><img src="https://iili.io/JCCz287.gif" border="0" style="width: 40%; display:block; align-self: center; margin: 0 auto;">Uploading... Please wait a moment.</div>
+    <div id="error_${field.fieldId}" style="display: none;">Oh no! An error occurred. Would you mind trying again?</div>
+    <div id="success_${field.fieldId}" style="display: none;">Upload Successful!</div>
+  </div>`;
+          break;
+        case 'currency':
+          fieldElement = `<input class="sleek-entrance" type="text" ${field.isRequired ? "required" : ""} name="${field.label}" placeholder="${field.label}" pattern="^\d*(\.\d{0,2})?$" />`;
+          break;
+        case 'dateWithoutTime':
+          fieldElement = `<input class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}" type="date" placeholder="${field.label}" />`;
+          break;
+        case 'dateWithTime':
+          fieldElement = `<input class="sleek-entrance" ${field.isRequired ? "required" : ""} name="${field.label}" type="datetime-local" placeholder="${field.label}" />`;
+          break;
+        case 'dropdown':
+          fieldElement = `<select class="sleek-entrance" name="${field.label}" ${field.isRequired ? "required" : ""}>`;
+          fieldElement += `<label for="${field.label}">${field.label}</label>`
+          fieldElement += `<option disabled selected>Choose an option...</option>`;
+          field.options.forEach((option, i) => {
+            fieldElement += `<option value="${option.trim()}">${option.trim()}</option>`;
+          });
+            fieldElement += `</select>`;
+            actions += `<button class="add-option" onclick="addOption('${field.fieldId}')">Edit Options</button>`;
+          break;
+        case 'time':
+          fieldElement = `<input class="sleek-entrance" ${field.isRequired ? "required" : ""} type="time" placeholder="${field.label}" name="${field.label}" />`;
+          break;
+        case 'checkboxGroup':
+          field.options.forEach((option, i) => {
+            const inputType = field.fieldType === 'checkboxGroup' ? 'checkbox' : 'radio';
+            fieldElement += `
+            <div class="nested-buttons">
+              <input type="${inputType}" id="${field.fieldId}-${i}" />
+              <label for="${field.fieldId}-${i}">${option}</label>
+            </div>
+          `;
+          });
+          actions += ``;
+          break;
+        case 'radioGroup':
+          field.options.forEach((option, i) => {
+            const inputType = field.fieldType === 'checkboxGroup' ? 'checkbox' : 'radio';
+            fieldElement += `
+            <div class="nested-buttons">
+              <input type="${inputType}" name="${field.label}" id="${option.label}" value="${option.label}" />
+              <label for="${option.label}">${option.label}</label>
+            </div>
+          `;
+          });
+          actions += ``;
+          break;
+        case 'multiDate':
+          fieldElement = `<input name="${field.label}" class="sleek-entrance" type="date" ${field.isRequired ? "required" : ""} placeholder="${field.label}" /><button>Add More</button>`;
+          break;
+        case 'multiTime':
+          fieldElement = `<input name="${field.label}" type="time" ${field.isRequired ? "required" : ""} placeholder="${field.label}" /><button>Add More</button>`;
+          break;
+      }
+      
+      
+      
+      
+      formPreview.innerHTML += `
+      <div class="sleek-entrance" id="${field.fieldId}">
+        ${editableContent}
+        ${fieldElement}
+        ${actions}<hr>
+      </div>
+    `;
+      
+    });
+    
+    setTimeout(() => {
+      document.querySelectorAll('.sleek-entrance').forEach(elem => {
+        elem.classList.add('visible');
+      });
+    }, 50);
+    
+    formPreview.innerHTML += `
+      <input type="submit" id="submit-button" value="Submit" onclick="handleSubmit()">
+    `;
+    setupRemoveField();
+  }
+  
+  function updatePlaceholder(fieldId, newPlaceholder) {
+    const field = fields.find(f => f.fieldId === fieldId);
+    if (field) {
+      field.placeholder = newPlaceholder;
+    }
+  }
+  
+  function updateContent(fieldId, newContent) {
+    const field = fields.find(f => f.fieldId === fieldId);
+    if (field) {
+      if (['title', 'heading', 'paragraph'].includes(field.fieldType)) {
+        field.content = newContent;
+      } else {
+        field.label = newContent;
+      }
+    }
+  }
+  
+  function updateField(index, attribute, value) {
+    fields[index][attribute] = value;
+    // Optionally: Regenerate JSON and/or update UI here
+  }
+
+  function updateLabel(fieldId, newLabel) {
+    const field = fields.find(f => f.fieldId === fieldId);
+    if (field) {
+      field.label = newLabel;
+    }
+  }
+  
+  function createForm() {
+    // Sort fields based on position property before generating JSON
+    fields.sort((a, b) => a.position - b.position);
+    const formTemplateJSON = JSON.stringify(fields);
+    
+    // Send the formTemplateJSON to the parent window or save it
+    window.parent.postMessage({ formTemplate: formTemplateJSON }, '*');
+    console.log(formTemplateJSON)
+  }
+
+
+</script>
+
+<script>
+  // Select all buttons on the page
+  const buttons = document.querySelectorAll("button");
+  
+  // Loop through all buttons and attach click event listener
+  buttons.forEach((button) => {
+    button.addEventListener("click", function() {
+      // Add the animation class
+      this.classList.add("button-clicked");
+      
+      // Remove the class after the animation duration (300ms in this example)
+      setTimeout(() => {
+        this.classList.remove("button-clicked");
+      }, 300);
+    });
+  });
+
+</script>
+
+<script>
+  //script for file upload
+  
+  function uploadFile(fieldId) {
+    let fileInput = document.getElementById("uploader_"+fieldId);
+    let files = fileInput.files;
+    if (files.length === 0) {
+      alert("Please select a file to upload.");
+      return;
+    }
+    
+    document.getElementById("uploading_"+String(fieldId)).style.display = "block";
+    document.getElementById("success_"+String(fieldId)).style.display = "none";
+    document.getElementById("error_"+String(fieldId)).style.display = "none";
+    
+    // Step 1: Get the best server
+    getBestServer().then(server => {
+      // Step 2: Upload the file to the server
+      uploadFileToServer(server, fileInput.files[0]).then(uploadResponse => {
+        console.log("Upload Response:", uploadResponse); // Logging upload response
+        
+        // Step 3: Enable CDN access using fileId as contentId
+        setCDNAccess(uploadResponse.fileId, fieldId).then(cdnAccessResponse => {
+          console.log("CDN Access Response:", cdnAccessResponse); // Logging CDN access response
+        });
+      });
+    }).catch(error => console.error(error));
+  }
+  
+  function getBestServer() {
+    return fetch('https://api.gofile.io/getServer')
+    .then(response => response.json())
+    .then(data => {
+      console.log("Best Server:", data); // Logging server response
+      if (data.status === 'ok') {
+        return data.data.server;
+      } else {
+        throw new Error('Failed to get the best server');
+      }
+    });
+  }
+  
+  function uploadFileToServer(server, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('token', 'Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S'); // Adding token to formData
+    
+    return fetch(`https://${server}.gofile.io/uploadFile`, {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'ok') {
+        return data.data;
+      } else {
+        throw new Error('Failed to upload file');
+      }
+    });
+  }
+  
+  function setCDNAccess(contentId, fieldId) {
+    return fetch('https://api.gofile.io/setOption', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contentId: contentId,
+        token: 'Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S',
+        option: 'directLink',
+        value: 'true',
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'ok') {
+	    document.getElementById("fileUrl_"+String(fieldId)).value = data.data;
+        document.getElementById("uploading_"+String(fieldId)).style.display = "none";
+        document.getElementById("success_"+String(fieldId)).style.display = "block";
+        return data.data;
+      } else {
+        document.getElementById(`"error_${fieldId}"`).style.display = "block";
+        document.getElementById(`"success_${fieldId}"`).style.display = "none";
+        document.getElementById(`"uploading_${fieldId}"`).style.display = "none";
+        throw new Error('Failed to set CDN access');
+      }
+    });
+  }
+
+  
+</script>
+
+<style>
+  
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+  
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+  
+  @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+  
+  label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-family: "Inter";
+  }
+  
+  html {
+    margin: 0 auto;
+    font-family: "Inter", sans-serif, serif;
+    background: #f5f7fa;
+    background: -webkit-linear-gradient(310deg, #AECBFA, #f5f7fa 40%); 
+    background: linear-gradient(310deg, #AECBFA, #f5f7fa 40%);
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+		touch-action: pan-y;
+  }
+  
+  body {
+    margin: 0;
+    min-width: 300px;
+    z-index: 5;
+		touch-action: pan-y;
+  }
+  
+  p {
+    margin-bottom: 20px;
+  }
+  
+  
+  #deleteFieldButton .tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: !important;
+  }
+  
+  #deleteFieldButton .tooltip::after {
+    content: "Double-click to delete";
+    position: absolute;
+    background-color: black;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    visibility: hidden;
+  }
+  
+  #deleteFieldButton .tooltip:hover::after {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  #adminPanel {
+    position: fixed;
+    display: flex;
+    background-color: rgb(239,243,245);
+    height: 100px;
+    width: 100vw;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 5;
+  }
+  
+  #bottom-panel {
+    position: fixed;
+    display: inline-flex;
+    background-color: #0a2342;
+    height: 100px;
+    width: 100vw;
+    left: 0;
+    right: 0;
+    top: calc(100% - 100px);
+    bottom: 0;
+    z-index: 5;
+    padding: 20px 0;
+
+  }
+  
+  
+  #create-button, #save-button {
+    position: relative !important;
+    border-style: solid;
+    border-color: transparent;
+    border-radius: 15px;
+    width: 30vw;
+    padding: 15px 20px;
+    background-color: rgba(3, 179, 101,0.9);
+    color: white;
+    font-size: medium;
+    height: 60px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 5;
+    margin: 0 auto;
+    opacity: 0.8 !important; /* 100% opacity */
+    transition: opacity 0.3s ease; /* 0.3s is the duration of the transition */
+  }
+  
+  #create-button:hover, #save-button:hover  {
+    opacity: 1 !important; /* 80% opacity */
+  }
+  
+  #save-button {
+    background-color: white;
+    color: black;
+  }
+  
+  
+  #navBar {
+    position: relative;
+    width: 100%;
+    display: inline-flex;
+    margin: 0 auto;
+    padding: 30px 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 5;
+    text-align: center;
+  }
+  
+  #navBar select {
+    background: linear-gradient(310deg,#feefee,#beebee);
+    margin: 0 auto;
+    width: 50%;
+    height: 40px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: "Montserrat";
+    border-radius: 7px;
+    
+  }
+  
+  #navBar button {
+    display: block;
+    width: 25%;
+    margin: 0 auto;
+    height: 40px;
+    background-color: white;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    font-weight: bold;
+    border-radius: 7px;
+    text-align: center;
+    justify-content: center;
+    font-family: "Montserrat", sans-serif, serif;
+  }
+  
+  #submit-button {
+    display: block;
+    width: 30%;
+    margin: 0 auto;
+    margin-top: 30px;
+    height: 40px;
+    background-color: rgb(29,73,231);
+    color: white;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    font-weight: bold;
+    border-radius: 7px;
+    text-align: center;
+    justify-content: center;
+    font-family: "Montserrat", sans-serif, serif;
+    font-weight: normal;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  
+  .nested-buttons button {
+    height: 30px;
+    background-color: white;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    font-weight: bold;
+    border-radius: 10px;
+  }
+  
+  #formContainer {
+    margin-top: 50px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin-bottom: 125px;
+  }
+  
+  #formPreview {
+    position: relative;
+    border-color: grey;
+    border-style: solid;
+    border-radius: 15px;
+    border-width: 0px;
+    min-width: 60%;
+    margin: 10%;
+    margin-top: 25px;
+    
+    min-height: 600px;
+    padding: 35px;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: white;
+    z-index: 0;
+    box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.1), 
+    0 1px 3px rgba(0, 0, 0, 0.08), 
+    0 10px 20px rgba(0, 0, 0, 0.12), 
+    0 18px 36px rgba(0, 0, 0, 0.15);
+  }
+  
+  textarea, input[type="time"] {
+  	padding-top: 10px !important;
+  	padding-left: 10px !important;
+  }
+  
+  input {
+    display: block;
+    width: 100%;
+    padding: auto 0;
+    border-style: outset;
+    border-width: 1px;
+    border-radius: 5px;
+    height: 50px;
+    margin-bottom: 15px;
+    padding-left: 10px !important;
+    padding-top: 0px !important; 
+    border-color: navy;
+    font-size: 14px;
+    font-family: "Montserrat", sans-serif, serif;
+    box-shadow: 
+    0 2px 3px rgba(0, 0, 0, 0.05), 
+    0 0.5px 1.5px rgba(0, 0, 0, 0.04), 
+    0 5px 10px rgba(0, 0, 0, 0.04), 
+    0 9px 18px rgba(0, 0, 0, 0.05); 
+  }
+  
+  hr {
+    display: none;
+    background-color: #0f0f0f80;
+    border-width: 0.1px 0 0 0;
+  }
+  
+  h1 {
+    text-align: center;
+    font-weight: 800 !important;
+    margin-bottom: 0;
+    height: 50px
+  }
+  
+  #submit-button {
+    position: relative;
+    width: 50vw;
+  //  padding: 20px 20px;
+    color: white;
+    font-size: medium;
+  }
+  
+
+  .action-buttons {
+    display: flow;
+    position: relative;
+    justify-content: right;
+    align-items: right;
+    text-align: right;
+    width: 0%;
+    margin: 0;
+    top: -75px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    left: 99.9%;
+    height: 50px;
+    white-space: nowrap;
+    transform: translateY(0px);
+  }
+  
+  .action-button-item {
+    display: none;
+    color: white;
+    font-weight: bolder;
+    margin: 0 14px;
+    background-color: #0a238295;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 1px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: large;
+    padding: 1.5px 5px;
+    visibility: visible;
+    opacity: 0.4 !important; 
+    transition: opacity 0.3s ease; /* 0.3s is the duration of the transition */
+  }
+  
+  .action-button-item:hover {
+    opacity: 1 !important; 
+  }
+  
+  
+  #formPreview:hover .action-button-item {
+    display: block;
+    color: white;
+    font-weight: bolder;
+    margin: 0 14px;
+    background-color: #0a238295;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 1px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: large;
+    padding: 1.5px 5px;
+  }
+  
+  #formPreview:hover hr {
+    //display: block;
+    background-color: #0f0f0f80;
+    border-width: 0.1px 0 0 0;
+    margin:0;
+    position: static;
+  }
+  
+  #formPreview:hover p {
+    display: block;
+    border-color: #0f0f0f80;
+    //border-style: solid;
+    //padding: 5px;
+    border-width: 0.1px;
+    position: static;
+  }
+  
+  textarea {
+    width: 100%;
+    border-radius: 7px;
+    flex-wrap: nowrap;
+    height: 60px;
+  }
+  
+  checkbox, input[type="checkbox"] {
+    display: flex;
+    width: 10%;
+    min-height: 50px;
+		align-items: flex-start;
+		align-self: flex-start;
+		justify-self: flex-start;
+		justify-items: flex-start;
+		justify-content: flex-start;
+		text-align: left;
+  }
+  
+  input[type="checkbox"] {
+    width: 4%;
+    
+  }
+ 
+  
+  .sleek-entrance {
+    opacity: 0;
+    transition: opacity 0.4s ease-out-in, transform 0.4s ease-out-in;
+    border-radius: 17px;
+  }
+  
+  .sleek-entrance.visible {
+    background-color: #beebee00;
+    opacity: 1;
+    
+    transition: opacity 0.4s ease-out-in, transform 0.4s ease-out-in;
+    transform: translateY(0px);
+    padding: 0;
+  }
+	
+	div .sleek-entrance.visible:not(label) {
+	padding-bottom: 20px;
+}
+  
+  #add-question-button {
+    opacity: 0.8 !important; 
+    transition: opacity 0.3s ease; 
+    transition: 0.1s ease-in-out; 
+  }
+  
+  #add-question-button:hover {
+    background-color: #beebee;
+    opacity: 1 !important;
+  }
+  
+  @keyframes buttonClicked {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .button-clicked {
+    animation: buttonClicked 0.1s ease-in-out;
+  }
+  
+  .nested-buttons {
+    display: flex;
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: ;
+    align-content: center;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .nested-buttons label {
+    margin-right: 94px;
+    padding-left: 7px;
+		margin-bottom: 5px;
+		margin-top: 0;
+    width: auto;
+  }
+	
+	.nested-buttons input[type="checkbox"] {
+	box-shadow: none;
+}
+
+.nested-buttons input[type="radio"] {
+	box-shadow: none;
+}
+  
+  #upload-container {
+    display: flex;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+		justify-items: center;
+    padding: 20px;
+    margin: 0 auto;
+    width: 80%;
+    font-family: Montserrat, Poppins, Avenir, Inter, sans-serif !important;
+		margin-bottom: 50px;
+  }
+  
+  #file-input {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+  
+  #submit-btn {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #009e60;
+    border: 0;
+    border-radius: 7px;
+    color: white;
+    width: 50%;
+		margin: 0 auto !important;
+		align-self: center;
+		justify-self: center;
+		text-align: center;
+    font-weight: bold;
+    font-family: Montserrat, Poppins, Avenir, Inter, sans-serif !important;
+  }
+  
+  /* file upload button */
+  input[type="file"]::file-selector-button {
+    border-radius: 4px;
+    padding: 0 16px;
+    height: 40px;
+    cursor: pointer;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.16);
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.05);
+    margin-right: 16px;
+    transition: background-color 200ms;
+    font-family: Montserrat, Poppins, Avenir, Inter, sans-serif !important;
+	margin: 0 auto !important;
+	align-self: center !important;
+	justify-self: center !important
+	text-align: center !important;
+  }
+  
+  /* file upload button hover state */
+  input[type="file"]::file-selector-button:hover, {
+    background-color: #f3f4f6;
+  }
+  
+  /* file upload button active state */
+  input[type="file"]::file-selector-button:active {
+    background-color: #e5e7eb;
+  }
+  
+  .add-option {
+    background-color: #beebee;
+    border-radius: 4px;
+    padding: 0 16px;
+    height: 40px;
+    margin-top: -70px;
+    margin-bottom: 50px;
+    border: 1px solid black;
+		box-shadow: 0 !important;
+  }
+  
+  input[type="radio" i] {
+    width: initial;
+  }
+  
+	@media (max-width: 768px) {
+		h1 {
+			margin-bottom: 55px;
+		}
+	}
+  
+  :required {
+    border: 2px solid red;
+  }
+
+  
+  
+	
+</style>
+
+
+<script>
+  
+  var form = document.getElementById('formPreview');
+  const submitBtn = document.getElementById('submit-button');
+  
+  form.addEventListener('input', validateForm);
+  
+  function validateForm() {
+    const requiredFields = form.querySelectorAll('[required]');
+    let isFormValid = true;
+    
+    requiredFields.forEach(field => {
+      if (field.value.trim() === '') {
+        isFormValid = false;
+      }
+    });
+    
+    return isFormValid;
+  }
+  
+  
+function handleSubmit() {
+    // Prevent the default form submission
+    event.preventDefault();
+    console.log("Submit button clicked");
+
+    // Assuming your form has an ID 'formPreview'
+    var form = document.getElementById('formPreview');
+
+    // Collect form data
+    let formData = {};
+    new FormData(form).forEach((value, key) => formData[key] = value);
+
+    // Log and post the message
+    console.log(JSON.stringify(formData));
+    
+  if (validateForm() == true) {
+    window.parent.postMessage(formData, '*');
+    console.log("Form Submit Successful!");
+  }
+  else {
+    alert("One or more required fields haven't been filled out yet.");
+  }
+
+}
+</script>

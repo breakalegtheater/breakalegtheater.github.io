@@ -3,15 +3,78 @@
 
 <head>
 	<title>Form Builder</title>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+		<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 	<script>
-		let fields = [{'isRequired':false,'label':'Form Title','position':0,'fieldType':'title','fieldId':'title-1699865255058'},{'isRequired':false,'label':'Enter instructions here.','position':1,'fieldType':'paragraph','fieldId':'paragraph-1699865255059'}];
+		let fields = [
+				{
+					"fieldType": "payment",
+					"fieldId": "1704874440932",
+					"label": "Complete Payment to Finish This Form",
+					"position": 0,
+					"isRequired": false,
+					"placeholder": "",
+					"options": [	
+						{
+							"amount": 695,
+							"frequency": "",
+							"installments": 0,
+							"productName": "Chicago Tuition",
+							"productDescription": "Pay In Full",
+							"id": "abc"
+						},
+						{
+							"amount": 347.50,
+							"frequency": "month",
+							"installments": 2,
+							"productName": "Chicago Tuition",
+							"productDescription": "2 Monthly Installments",
+							"id": "def"
+						},
+						{
+							"amount": 231.67,
+							"frequency": "month",
+							"installments": 3,
+							"productName": "Chicago Tuition",
+							"productDescription": "3 Monthly Installments",
+							"id": "ghi"
+						},
+						{
+							"amount": 173.75,
+							"frequency": "month",
+							"installments": 4,
+							"productName": "Chicago Tuition",
+							"productDescription": "4 Monthly Installments",
+							"id": "jkl"
+						},
+						{
+							"amount": 139.00,
+							"frequency": "month",
+							"installments": 5,
+							"productName": "Chicago Tuition",
+							"productDescription": "5 Monthly Installments",
+							"id": "mno"
+						},
+						{
+							"amount": 115.83,
+							"frequency": "month",
+							"installments": 6,
+							"productName": "Chicago Tuition",
+							"productDescription": "6 Monthly Installments",
+							"id": "pqr"
+						}
+					]
+				}
+			];
 	</script>
+	
 	<script src="https://MomentJS.com/downloads/moment.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
+	<script src="admin.js"></script>
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css">
 
-	<script src="admin.js"></script>
 	<link rel="stylesheet" href="styles.css">
 </head>
 
@@ -38,7 +101,7 @@
 					<option value="time">Time Question</option>
 					<option value="checkboxGroup">Checkbox Group</option>
 					<option value="radioGroup">Radio Group</option>
-					<option value="multiDate">Multi-Date Question</option>
+					<option value="multiDate">Multi-Date Question</option> 
 					<!--  <option value="multiTime">Multi-Time Question</option> -->
 					<option value="payment">Collect Payment</option>
 				</select>

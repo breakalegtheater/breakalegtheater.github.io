@@ -141,6 +141,36 @@ function addFieldBottom() {
 	}
 }
 
+function addProduct(event, fieldId) {
+	event.preventDefault();
+  	event.stopPropagation();
+	let field = fields.find(field => field.fieldId === fieldId);
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	field.options.push({
+		"amount": 1,
+		"frequency": "",
+		"installments": 0,
+		"productName": field?.options[index]?.productName || "New Product",
+		"productDescription": "———",
+		"id": Date.now()
+	});
+	field.options = field.options.sort((a,b) => b.amount - a.amount);
+	updatePreview();
+	selectPaymentOption(id);
+}
+
+function deleteProduct(event, fieldId) {
+	event.preventDefault();
+  	event.stopPropagation();
+	let field = fields.find(field => field.fieldId === fieldId);
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	const selectedProductId = field.options[index].id;
+	field.options = field.options.filter(product => product.id !== selectedProductId);
+	field.options = field.options.sort((a,b) => b.amount - a.amount);
+	updatePreview();
+	selectPaymentOption(id);
+}
+
 function editProductName(event, fieldId) {
 	event.preventDefault();
   	event.stopPropagation();
@@ -164,11 +194,10 @@ function editProductDescription(event, fieldId) {
 	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	customPrompt("Enter Product Description: ", field.options[index].productDescription).then((value) => {
 		console.log(value); // This will log the input value or null
-		if (value) {
-			field.options[index].productDescription = value.trim();
-			updatePreview();
-			selectPaymentOption(index);
-		}
+		field.options[index].productDescription = value.trim();
+		updatePreview();
+		selectPaymentOption(index);
+		
 	});
 }
 
@@ -591,7 +620,15 @@ display: none !important;
 </style>
 `;
 actions += `
+	
+	<div class="add-product-section" style="width: 100%; display: flex;">
+		<button style="width: 50%;" href="#" onclick="addProduct(event, '${field.fieldId}')">+ Add Product Option</span></button>
+		<button style="width: 50%;" href="#" onclick="deleteProduct(event, '${field.fieldId}')">× Delete Selected Product</span></button>
+	</div>
+	
+
     <div class="payment-option-buttons" style="opacity: 1;">
+	
       <button href="#" onclick="editProductName(event, '${field.fieldId}')">Edit Product Name<br><span id="selectedPaymentTitle" style="font-size: smaller; font-style: italic; font-weight: lighter;">${getSelectedPaymentOption().productName}</span></button>
       <button href="#" onclick="editProductDescription(event, '${field.fieldId}')">Edit Product Description<br><span id="selectedPaymentDescription" style="font-size: smaller; font-style: italic; font-weight: lighter;">${getSelectedPaymentOption().productDescription}</span></button>
       <button href="#" onclick="editPrice(event, '${field.fieldId}')">Edit Price<br><span id="selectedPaymentPrice" style="font-size: smaller; font-style: italic; font-weight: lighter;">$${getSelectedPaymentOption().amount}</span></button>
