@@ -621,9 +621,9 @@ display: none !important;
 `;
 actions += `
 	
-	<div class="add-product-section" style="width: 100%; display: flex;">
-		<button style="width: 50%;" href="#" onclick="addProduct(event, '${field.fieldId}')">+ Add Product Option</span></button>
-		<button style="width: 50%;" href="#" onclick="deleteProduct(event, '${field.fieldId}')">× Delete Selected Product</span></button>
+	<div class="add-product-section payment-option-buttons" style="opacity: 1; width: 100%; display: flex;">
+		<button style="width: 50%; background-color: teal; color: white;" href="#" onclick="addProduct(event, '${field.fieldId}')">+ Add Product Option</span></button>
+		<button style="width: 50%; background-color: #cc1331; color: white;" href="#" onclick="deleteProduct(event, '${field.fieldId}')">× Delete Selected Product</span></button>
 	</div>
 	
 
