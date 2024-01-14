@@ -145,7 +145,7 @@ function addProduct(event, fieldId) {
 	event.preventDefault();
   	event.stopPropagation();
 	let field = fields.find(field => field.fieldId === fieldId);
-	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	const index = document.querySelector(".selected")?.id?.split("-")[document?.querySelector(".selected")?.id?.split("-")?.length-1] || 0;
 	field.options.push({
 		"amount": 1,
 		"frequency": "",
