@@ -819,7 +819,11 @@ function handlePhoneInputs() {
 	var phoneInputs = document.querySelectorAll('input[type="tel"]');
 	phoneInputs.forEach(phoneInput => {
 		phoneInput.addEventListener('input', function (e) {
-			var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+			var x = e.target.value;
+			if (x[0] == "1") {
+				x = x.slice(1)
+			}
+			x = x.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
 			e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
 		});
 	});
