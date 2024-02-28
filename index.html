@@ -8,64 +8,7 @@
 		<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 	<script>
 		let fields = [
-				{
-					"fieldType": "payment",
-					"fieldId": "1704874440932",
-					"label": "Complete Payment to Finish This Form",
-					"position": 0,
-					"isRequired": false,
-					"placeholder": "",
-					"options": [	
-						{
-							"amount": 695,
-							"frequency": "",
-							"installments": 0,
-							"productName": "Chicago Tuition",
-							"productDescription": "Pay In Full",
-							"id": "abc"
-						},
-						{
-							"amount": 347.50,
-							"frequency": "month",
-							"installments": 2,
-							"productName": "Chicago Tuition",
-							"productDescription": "2 Monthly Installments",
-							"id": "def"
-						},
-						{
-							"amount": 231.67,
-							"frequency": "month",
-							"installments": 3,
-							"productName": "Chicago Tuition",
-							"productDescription": "3 Monthly Installments",
-							"id": "ghi"
-						},
-						{
-							"amount": 173.75,
-							"frequency": "month",
-							"installments": 4,
-							"productName": "Chicago Tuition",
-							"productDescription": "4 Monthly Installments",
-							"id": "jkl"
-						},
-						{
-							"amount": 139.00,
-							"frequency": "month",
-							"installments": 5,
-							"productName": "Chicago Tuition",
-							"productDescription": "5 Monthly Installments",
-							"id": "mno"
-						},
-						{
-							"amount": 115.83,
-							"frequency": "month",
-							"installments": 6,
-							"productName": "Chicago Tuition",
-							"productDescription": "6 Monthly Installments",
-							"id": "pqr"
-						}
-					]
-				}
+				{ "fieldType": "phone", "fieldId": "1709099497419", "label": "Enter your phone number:", "position": 0, "isRequired": false, "placeholder": "" }
 			];
 	</script>
 	
@@ -130,7 +73,7 @@
 		window.onload = function() {
 			updatePreview();
 			form.addEventListener('input', validateForm);
-			//togglePreviewMode(false);
+			togglePreviewMode(true);
 		};
 	</script>
 </body></html>
