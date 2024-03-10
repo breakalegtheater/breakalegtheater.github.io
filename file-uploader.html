@@ -265,10 +265,11 @@
         }
 
         function setCDNAccess(contentId) {
-            return fetch('https://api.gofile.io/createDirectLink', {
+            return fetch(`https://api.gofile.io/contents/${contentId}/directLinks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': 'Bearer Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S'
                 },
                 body: JSON.stringify({
                     contentId: contentId,
