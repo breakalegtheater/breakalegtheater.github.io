@@ -730,6 +730,20 @@ div.sleek-entrance.visible:hover {
 	width: 100%;
 }
 
+.upload-container .file-preview {
+	display: flex;
+}
+
+.file-preview *:not(audio) {
+	width: 40%;
+	margin: 0 auto;
+}
+
+.file-preview embed {
+	width: 100%;
+	margin: 0 auto;
+}
+
 
 /* the file upload button */
 #submit-btn {
