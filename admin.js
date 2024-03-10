@@ -445,13 +445,13 @@ function updatePreview() {
 				break;
 			case 'fileUpload':
 				fieldElement = `<div class="upload-container">
-<p><span style=\'font-size: small; color: darkgrey;\'>First click the <b>Choose File</b> button, select your file to upload, and then click the green <span style=\'color: #009e60; font-weight: 800;\'>Upload</span> button. Make sure you see the phrase \'<b>Upload Successful</b>\' before continuing.</span></p>
-    <input type="file" id="uploader_${field.fieldId}" >
-    <button id="submit-btn" onclick="event.preventDefault(); uploadFile('${field.fieldId}');">UPLOAD</button>
+<p><span style=\'font-size: small; color: darkgrey;\'>First click the <b>Choose File</b> button, select your file to upload. Make sure you see the phrase \'<b>Upload Successful</b>\' before continuing.</span></p>
+    <input type="file" id="uploader_${field.fieldId}" onchange="uploadFile('${field.fieldId}')" >
     <input type="hidden" id="fileUrl_${field.fieldId}" name="${field.label}" ${field.isRequired ? "required" : ""}>
     <div id="uploading_${field.fieldId}" style="display: none;"><img src="https://iili.io/JCCz287.gif" border="0" style="width: 40%; display:block; align-self: center; margin: 0 auto;">Uploading... Please wait a moment.</div>
     <div id="error_${field.fieldId}" style="display: none;">Oh no! An error occurred. Would you mind trying again?</div>
     <div id="success_${field.fieldId}" style="display: none;">Upload Successful!</div>
+		<div class="file-preview" id="preview_${field.fieldId}"></div>
   </div>`;
 				break;
 			case 'currency':
@@ -785,24 +785,40 @@ function uploadFileToServer(server, file) {
 }
 
 function setCDNAccess(contentId, fieldId) {
-	return fetch('https://api.gofile.io/setOption', {
-			method: 'PUT',
+	return fetch(`https://api.gofile.io/contents/${contentId}/directLinks`, {
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
 				contentId: contentId,
 				token: 'Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S',
-				option: 'directLink',
-				value: 'true',
+				// option: 'directLink',
+				// value: 'true',
 			}),
 		})
 		.then(response => response.json())
 		.then(data => {
 			if (data.status === 'ok') {
-				document.getElementById("fileUrl_" + String(fieldId)).value = data.data;
+				const fileUrl = data.data.directLink;
+				const fileType = fileUrl.split(".")[fileUrl.split(".").length - 1];
+				const previewFile = document.getElementById("preview_" + String(fieldId));
+				document.getElementById("fileUrl_" + String(fieldId)).value = fileUrl;
 				document.getElementById("uploading_" + String(fieldId)).style.display = "none";
 				document.getElementById("success_" + String(fieldId)).style.display = "block";
+				if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'tif'].includes(fileType)) {
+					previewFile.innerHTML = `<img src="${fileUrl}">`;
+				} 
+				if (['mov', 'mp4', 'webm', 'm4v'].includes(fileType)) {
+					previewFile.innerHTML = `<video controls src="${fileUrl}">`;
+				} 
+				if (['mp3', 'wav', 'm4a', 'caf', 'mpeg'].includes(fileType)) {
+					previewFile.innerHTML = `<audio controls src="${fileUrl}">`;
+				} 
+				if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'csv', 'xls', 'xlsx', 'heic'].includes(fileType)) {
+					previewFile.innerHTML = `<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}" width="100%">`
+				}
+				
 				return data.data;
 			} else {
 				document.getElementById(`"error_${fieldId}"`).style.display = "block";
