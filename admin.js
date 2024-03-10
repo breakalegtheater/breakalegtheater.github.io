@@ -769,6 +769,7 @@ function uploadFileToServer(server, file) {
 	const formData = new FormData();
 	formData.append('file', file);
 	formData.append('token', 'Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S'); // Adding token to formData
+	formData.append("folderId", "4aa1aeeb-f13a-415c-85f8-427442868137");
 
 	return fetch(`https://${server}.gofile.io/uploadFile`, {
 			method: 'POST',
