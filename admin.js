@@ -801,7 +801,7 @@ function setCDNAccess(contentId, fieldId) {
 		.then(data => {
 			if (data.status === 'ok') {
 				const fileUrl = data.data.directLink;
-				const fileType = fileUrl.split(".")[fileUrl.split(".").length - 1];
+				const fileType = fileUrl.split(".")[fileUrl.split(".").length - 1].toLowerCase();
 				const previewFile = document.getElementById("preview_" + String(fieldId));
 				document.getElementById("fileUrl_" + String(fieldId)).value = fileUrl;
 				document.getElementById("uploading_" + String(fieldId)).style.display = "none";
