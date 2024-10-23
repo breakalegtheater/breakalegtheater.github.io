@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Upload Widget</title>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/libheif-js@1.17.1/libheif/libheif.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script type="module">
+       import libheif from "https://cdn.jsdelivr.net/npm/libheif-js@1.17.1/libheif-wasm/libheif-bundle.mjs";
+       window.libheif = libheif;
+    </script>
     <style>
         /* style.css */
         #upload-container {
@@ -179,6 +185,16 @@
 
 
     <script>
+
+        
+
+        const getFileExtension = (file) => {
+            if (!file) return null;
+            const extension = file.split(".")[file.split(".").length - 1];
+            console.log(extension)
+            return extension;
+        }
+
         let fileUrl = null;
         document.getElementById('file-input').addEventListener('change', async function () {
             let fileInput = document.getElementById('file-input');
@@ -190,10 +206,24 @@
 
             document.getElementById("uploading").style.display = "block";
 
+            let fileToUpload = files[0];
+
+            if (getFileExtension(files[0].name).toLowerCase() === "heic") {
+                console.log("Converting HEIC to JPEG");
+                try {
+                    fileToUpload = await convertHeicToJpeg(files[0], 0.6); // You can adjust the quality here
+                } catch (error) {
+                    console.error("Error converting HEIC to JPEG:", error);
+                    document.getElementById("error").style.display = "block";
+                    document.getElementById("uploading").style.display = "none";
+                    return;
+                }
+            }
+
             // Step 1: Get the best server
             const server = await getBestServer();
             // Step 2: Upload the file to the server
-            const uploadResponse = await uploadFileToServer(server, fileInput.files[0]);
+            const uploadResponse = await uploadFileToServer(server, fileToUpload);
             console.log("Upload Response:", uploadResponse); // Logging upload response
 
             // Step 3: Enable CDN access using fileId as contentId
@@ -222,9 +252,10 @@
             if (['mp3', 'wav', 'm4a', 'caf', 'mpeg'].includes(fileType)) {
                 document.getElementById("preview").innerHTML = `<audio controls src="${fileUrl}"></audio>`;
             }
-            if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'csv', 'xls', 'xlsx', 'heic'].includes(fileType)) {
+            if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'csv', 'xls', 'xlsx'].includes(fileType)) {
                 document.getElementById("preview").innerHTML = `<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}" width="100%">`
             }
+
         });
 
         async function getBestServer() {
@@ -283,6 +314,63 @@
             }
         }
 
+        async function convertHeicToJpeg(heicFile, quality = 0.6) {
+            const { HeifDecoder } = await window.libheif();
+
+            const readFile = (file) => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(new Uint8Array(e.target.result));
+                reader.onerror = (error) => reject(error);
+                reader.readAsArrayBuffer(file);
+            });
+
+            const displayFile = async (buffer) => {
+                const decoder = new HeifDecoder();
+                const data = decoder.decode(buffer);
+                const image = data[0];
+                const width = image.get_width();
+                const height = image.get_height();
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                const context = canvas.getContext("2d");
+                const imageData = context.createImageData(width, height);
+                await new Promise((resolve, reject) => {
+                    image.display(imageData, (displayData) => {
+                        if (!displayData) {
+                            return reject(new Error("HEIF processing error"));
+                        }
+                        resolve();
+                    });
+                });
+
+                context.putImageData(imageData, 0, 0);
+                return canvas;
+            };
+
+            const getCanvasImageBlob = (canvas, quality) => new Promise((resolve, reject) => {
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        return resolve(blob);
+                    }
+                    return reject(new Error('Failed to convert the image'));
+                }, 'image/jpeg', quality);
+            });
+
+            try {
+                const buffer = await readFile(heicFile);
+                console.time("Conversion time");
+                const canvas = await displayFile(buffer);
+                const blob = await getCanvasImageBlob(canvas, quality);
+                console.timeEnd("Conversion time");
+                return new File([blob], heicFile.name.replace('.heic', '.jpg'), { type: 'image/jpeg' });
+            } catch (error) {
+                console.error("Failed to convert image:", error);
+                throw error;
+            }
+        }
 
     </script>
 </body>
