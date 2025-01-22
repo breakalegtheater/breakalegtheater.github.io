@@ -3,15 +3,15 @@
 
 <head>
 	<title>Form Builder</title>
-	<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-		<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta content="IE=edge" http-equiv="X-UA-Compatible" />
+	<meta content="width=device-width, initial-scale=1.0" name="viewport" />
 	<script>
 		let fields = [
-				{ "fieldType": "phone", "fieldId": "1709099497419", "label": "Enter your phone number:", "position": 0, "isRequired": false, "placeholder": "" }
-			];
+			{ "fieldType": "fileUpload", "fieldId": "1709099497419", "label": "Upload a file:", "position": 0, "isRequired": false, "placeholder": "" }
+		];
 	</script>
-	
+
 	<script src="https://MomentJS.com/downloads/moment.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/pikaday/pikaday.js"></script>
@@ -44,13 +44,15 @@
 					<option value="time">Time Question</option>
 					<option value="checkboxGroup">Checkbox Group</option>
 					<option value="radioGroup">Radio Group</option>
-					<option value="multiDate">Multi-Date Question</option> 
+					<option value="multiDate">Multi-Date Question</option>
 					<!--  <option value="multiTime">Multi-Time Question</option> -->
 					<option value="payment">Collect Payment</option>
 				</select>
 				<div class="add-buttons">
-					<button id="add-question-button-top" onclick="addFieldTop()"><span class="arrow-icon">⤴️</span><br>Add First</button>
-					<button id="add-question-button-bottom" onclick="addFieldBottom()">Add Last<br><span class="arrow-icon">⤵️</span></button>
+					<button id="add-question-button-top" onclick="addFieldTop()"><span class="arrow-icon">⤴️</span><br>Add
+						First</button>
+					<button id="add-question-button-bottom" onclick="addFieldBottom()">Add Last<br><span
+							class="arrow-icon">⤵️</span></button>
 				</div>
 			</div>
 
@@ -70,10 +72,12 @@
 	<script>
 		const form = document.getElementById('formPreview');
 		const submitBtn = document.getElementById('submit-button');
-		window.onload = function() {
+		window.onload = function () {
 			updatePreview();
 			form.addEventListener('input', validateForm);
 			togglePreviewMode(true);
 		};
 	</script>
-</body></html>
+</body>
+
+</html>

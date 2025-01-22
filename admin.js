@@ -143,9 +143,9 @@ function addFieldBottom() {
 
 function addProduct(event, fieldId) {
 	event.preventDefault();
-  	event.stopPropagation();
+	event.stopPropagation();
 	let field = fields.find(field => field.fieldId === fieldId);
-	const index = document.querySelector(".selected")?.id?.split("-")[document?.querySelector(".selected")?.id?.split("-")?.length-1] || 0;
+	const index = document.querySelector(".selected")?.id?.split("-")[document?.querySelector(".selected")?.id?.split("-")?.length - 1] || 0;
 	field.options.push({
 		"amount": 1,
 		"frequency": "",
@@ -154,28 +154,28 @@ function addProduct(event, fieldId) {
 		"productDescription": "———",
 		"id": Date.now()
 	});
-	field.options = field.options.sort((a,b) => b.amount - a.amount);
+	field.options = field.options.sort((a, b) => b.amount - a.amount);
 	updatePreview();
 	selectPaymentOption(id);
 }
 
 function deleteProduct(event, fieldId) {
 	event.preventDefault();
-  	event.stopPropagation();
+	event.stopPropagation();
 	let field = fields.find(field => field.fieldId === fieldId);
-	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	const selectedProductId = field.options[index].id;
 	field.options = field.options.filter(product => product.id !== selectedProductId);
-	field.options = field.options.sort((a,b) => b.amount - a.amount);
+	field.options = field.options.sort((a, b) => b.amount - a.amount);
 	updatePreview();
 	selectPaymentOption(id);
 }
 
 function editProductName(event, fieldId) {
 	event.preventDefault();
-  	event.stopPropagation();
+	event.stopPropagation();
 	let field = fields.find(field => field.fieldId === fieldId);
-	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	customPrompt(`<h1>Enter Product Name:</h1> `, field.options[index].productName).then((value) => {
 		if (value) {
 			console.log(value); // This will log the input value or null	
@@ -184,12 +184,12 @@ function editProductName(event, fieldId) {
 			selectPaymentOption(index);
 		}
 	});
-	
+
 }
 
 function editProductDescription(event, fieldId) {
 	event.preventDefault();
-  	event.stopPropagation();
+	event.stopPropagation();
 	let field = fields.find(field => field.fieldId === fieldId);
 	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	customPrompt("Enter Product Description: ", field.options[index].productDescription).then((value) => {
@@ -197,14 +197,14 @@ function editProductDescription(event, fieldId) {
 		field.options[index].productDescription = value.trim();
 		updatePreview();
 		selectPaymentOption(index);
-		
+
 	});
 }
 
 
 function editPrice(event, fieldId) {
 	event.preventDefault();
-  	event.stopPropagation();
+	event.stopPropagation();
 	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	let field = fields.find(field => field.fieldId === fieldId);
 	customPrompt('<h2>Enter a price for this payment option.</h2>', field.options[index]["amount"]).then((value) => {
@@ -219,7 +219,7 @@ function editPrice(event, fieldId) {
 
 function editInstallments(event, fieldId) {
 	event.preventDefault();
-  	event.stopPropagation();
+	event.stopPropagation();
 	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	let field = fields.find(field => field.fieldId === fieldId);
 	customPrompt('<h2>Enter the total number of installments that the customer will pay.</h2>', field.options[index]["installments"]).then((value) => {
@@ -242,9 +242,9 @@ function editInstallments(event, fieldId) {
 
 function editPaymentPlan(event, fieldId) {
 	event.preventDefault();
-  	event.stopPropagation();
+	event.stopPropagation();
 	let field = fields.find(field => field.fieldId === fieldId);
-	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+	const index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	customPrompt(`
 	<h1>Choose Payment Plan Type</h1> 
 	<p>Enter any of the following options in the box below:</p> 
@@ -276,7 +276,7 @@ function editPaymentPlan(event, fieldId) {
 	</table>`, field?.options[index]?.frequency || "One-Time").then((value) => {
 		if (value) {
 			console.log(value); // This will log the input value or null
-			let cleanedValue = 	value.trim().toLowerCase();
+			let cleanedValue = value.trim().toLowerCase();
 			if (!cleanedValue || cleanedValue === "once") {
 				cleanedValue = ""
 			}
@@ -285,7 +285,7 @@ function editPaymentPlan(event, fieldId) {
 			selectPaymentOption(index);
 		}
 	});
-	
+
 }
 
 
@@ -524,7 +524,7 @@ function updatePreview() {
 		<br>
 		<br>
 		<textarea hidden name="${field.label}" ${field.isRequired ? "required" : ""} style="width: 100%; height: 200px;" id="aggregatedDates-${field.fieldId}"></textarea>`;
-		
+
 				break;
 			case 'multiTime':
 				fieldElement = `<input name="${field.label}" type="time" ${field.isRequired ? "required" : ""} placeholder="${field.placeholder}" /><button>Add More</button>`;
@@ -532,31 +532,31 @@ function updatePreview() {
 			case 'payment':
 
 				fieldElement = `<div id="payment-container""><br>`;
-				
-				field.options.sort((a,b) => b.amount-a.amount).forEach((option, index) => {
 
-					let amount = `$${(Number.parseFloat(Number.parseFloat(field.options[index].amount).toFixed(2))).toLocaleString("en-US",{style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-					let todayWords = new Date(Date.now() + 0).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+				field.options.sort((a, b) => b.amount - a.amount).forEach((option, index) => {
+
+					let amount = `$${(Number.parseFloat(Number.parseFloat(field.options[index].amount).toFixed(2))).toLocaleString("en-US", { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+					let todayWords = new Date(Date.now() + 0).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })
 					let today = new Date();
 					let installments = option.installments || 0;
-					
-					let endDate = ( function()  {
+
+					let endDate = (function () {
 						if (option.frequency === "week") {
-							return new Date(today.setDate(today.getDate() + (installments * 7 - 1))).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+							return new Date(today.setDate(today.getDate() + (installments * 7 - 1))).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })
 						}
 						else if (option.frequency === "month") {
-							return new Date(today.setMonth(today.getMonth() + installments - 1)).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+							return new Date(today.setMonth(today.getMonth() + installments - 1)).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })
 						}
 						else if (option.frequency === "year") {
-							return new Date(today.setFullYear(today.getFullYear() + installments - 1)).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+							return new Date(today.setFullYear(today.getFullYear() + installments - 1)).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })
 						}
 						else if (option.frequency === "day") {
-							return new Date(today.setDate(today.getDate() + installments - 1)).toLocaleString("en-US",{month: "short", day: "numeric", year: "numeric"})
+							return new Date(today.setDate(today.getDate() + installments - 1)).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })
 						}
 						else {
 							return null;
 						}
-					} ) ();
+					})();
 
 					let thePaymentMessage = `<br>Pay <b>${amount} now (${todayWords})</b>, and your card will be auto-charged <b>${amount} each ${option.frequency}</b> until <b>${endDate}</b>.`;
 					if (!installments || !option?.frequency) {
@@ -580,7 +580,7 @@ function updatePreview() {
 							<td class="value" colspan=2 style="border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;">
 								<b>
 								${amount}
-								${option?.frequency && !option?.frequency.includes("one") && !option?.frequency.includes("once") && ['week','month','year', 'day'].includes(option?.frequency?.trim()) ? "/ "+option?.frequency : "One-Time"}
+								${option?.frequency && !option?.frequency.includes("one") && !option?.frequency.includes("once") && ['week', 'month', 'year', 'day'].includes(option?.frequency?.trim()) ? "/ " + option?.frequency : "One-Time"}
 								</b>
 								
 								${option.installments > 1 && "<br>" + option.installments + " Installments" || ""}
@@ -593,13 +593,13 @@ function updatePreview() {
 				
 `;
 				})
-				
+
 				fieldElement += `</div>
 
 
 
 <input type="hidden" id="payment-status" name="Payment Status" value="NOT PAID">
-<input type="hidden" id="payment-amount" name="Payment Amount" value="$${(Number.parseFloat(Number.parseFloat(field.options[0].amount).toFixed(2))).toLocaleString("en-US",{style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2})}">
+<input type="hidden" id="payment-amount" name="Payment Amount" value="$${(Number.parseFloat(Number.parseFloat(field.options[0].amount).toFixed(2))).toLocaleString("en-US", { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 })}">
 <textarea style="display: none" ${field.isRequired ? "required" : ""} id="selected-payment-option" name="Payment Option Selected" value=""></textarea>
 <br>
 <button onclick="handleSubmit()" id="pay-button" style="cursor: pointer; text-align: center; height: 50px; border: 0; border-radius: 15px; font-weight: bolder; color: white; font-size: large; background: linear-gradient(-5deg, #009e60, #009e6080); width: 100%;">FINISH & PAY &rarr;</button>
@@ -619,7 +619,7 @@ display: none !important;
 }
 </style>
 `;
-actions += `
+				actions += `
 	
 	<div class="add-product-section payment-option-buttons" style="opacity: 1; width: 100%; display: flex;">
 		<button style="width: 50%; background-color: teal; color: white;" href="#" onclick="addProduct(event, '${field.fieldId}')">+ Add Product Option</span></button>
@@ -726,108 +726,192 @@ buttons.forEach((button) => {
 
 //scripts for file upload
 
-function uploadFile(fieldId) {
-	let fileInput = document.getElementById("uploader_" + fieldId);
-	let files = fileInput.files;
-	if (files.length === 0) {
-		alert("Please select a file to upload.");
-		return;
-	}
-
-	document.getElementById("uploading_" + String(fieldId)).style.display = "block";
-	document.getElementById("success_" + String(fieldId)).style.display = "none";
-	document.getElementById("error_" + String(fieldId)).style.display = "none";
-
-	// Step 1: Get the best server
-	getBestServer().then(server => {
-		// Step 2: Upload the file to the server
-		uploadFileToServer(server, fileInput.files[0]).then(uploadResponse => {
-			console.log("Upload Response:", uploadResponse); // Logging upload response
-
-			// Step 3: Enable CDN access using fileId as contentId
-			setCDNAccess(uploadResponse.fileId, fieldId).then(cdnAccessResponse => {
-				console.log("CDN Access Response:", cdnAccessResponse); // Logging CDN access response
-			});
-		});
-	}).catch(error => console.error(error));
+const getFileExtension = (file) => {
+	if (!file) return null;
+	const extension = file.split(".")[file.split(".").length - 1];
+	console.log(extension)
+	return extension;
 }
 
-function getBestServer() {
-	return fetch('https://api.gofile.io/getServer')
-		.then(response => response.json())
-		.then(data => {
-			console.log("Best Server:", data); // Logging server response
-			if (data.status === 'ok') {
-				return data.data.server;
-			} else {
-				throw new Error('Failed to get the best server');
+const uploadFile = async (fieldId) => {
+	try {
+		let fileInput = document.getElementById("uploader_" + fieldId);
+
+		let files = fileInput.files;
+		if (files.length === 0) {
+			alert("Please select a file to upload.");
+			return;
+		}
+
+		document.getElementById("uploading_" + String(fieldId)).style.display = "block";
+
+		let fileToUpload = files[0];
+
+		if (getFileExtension(files[0].name).toLowerCase() === "heic") {
+			console.log("Converting HEIC to JPEG");
+			try {
+				fileToUpload = await convertHeicToJpeg(files[0], 0.6); // You can adjust the quality here
+			} catch (error) {
+				console.error("Error converting HEIC to JPEG:", error);
+				document.getElementById("error_" + String(fieldId)).style.display = "block";
+				document.getElementById("uploading_" + String(fieldId)).style.display = "none";
+				return;
 			}
-		});
+		}
+
+		// Step 1: Get the best server
+		const server = await getBestServer();
+		// Step 2: Upload the file to the server
+		const uploadResponse = await uploadFileToServer(server, fileToUpload);
+		console.log("Upload Response:", uploadResponse); // Logging upload response
+
+		// Step 3: Enable CDN access using fileId as contentId
+		const cdnAccessResponse = await setCDNAccess(uploadResponse.id);
+		console.log("CDN Access Response:", cdnAccessResponse); // Logging CDN access response
+
+		// Send the postMessage to the parent window with CDN access response
+		window.parent.postMessage({
+			type: 'file-upload',
+			fileData: cdnAccessResponse,
+			contentId: uploadResponse.id
+		}, '*'); // Replace '*' with your domain for security
+
+		fileUrl = encodeURI(cdnAccessResponse.directLink.toLowerCase());
+		const fileType = fileUrl.split(".")[fileUrl.split(".").length - 1];
+
+		console.log("File URL:", fileUrl); // Logging file URL
+
+		// Handle images
+		if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'tif'].includes(fileType)) {
+			document.getElementById("preview_" + String(fieldId)).innerHTML = `<img src="${fileUrl}">`;
+		}
+		if (['mov', 'mp4', 'webm', 'm4v'].includes(fileType)) {
+			document.getElementById("preview_" + String(fieldId)).innerHTML = `<video controls src="${fileUrl}">`;
+		}
+		if (['mp3', 'wav', 'm4a', 'caf', 'mpeg'].includes(fileType)) {
+			document.getElementById("preview_" + String(fieldId)).innerHTML = `<audio controls src="${fileUrl}"></audio>`;
+		}
+		if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'csv', 'xls', 'xlsx'].includes(fileType)) {
+			document.getElementById("preview_" + String(fieldId)).innerHTML = `<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}" width="100%">`
+		}
+		document.getElementById("uploading_" + String(fieldId)).style.display = "none";
+		document.getElementById("success_" + String(fieldId)).style.display = "block";
+	} catch (error) {
+		console.error(error)
+		document.getElementById("error_" + String(fieldId)).style.display = "block";
+		document.getElementById("uploading_" + String(fieldId)).style.display = "none";
+	}
 }
 
-function uploadFileToServer(server, file) {
+async function getBestServer() {
+	const response = await fetch('https://api.gofile.io/servers?zone=na');
+	const data = await response.json();
+	console.log("Best Server:", data); // Logging server response
+	if (data.status === 'ok') {
+		return data.data.servers[0].name;
+	} else {
+		throw new Error('Failed to get the best server');
+	}
+}
+
+async function uploadFileToServer(server, file) {
 	const formData = new FormData();
 	formData.append('file', file);
 	formData.append('token', 'Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S'); // Adding token to formData
 	formData.append("folderId", "4aa1aeeb-f13a-415c-85f8-427442868137");
 
-	return fetch(`https://${server}.gofile.io/uploadFile`, {
-			method: 'POST',
-			body: formData,
-		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.status === 'ok') {
-				return data.data;
-			} else {
-				throw new Error('Failed to upload file');
-			}
-		});
+	const response = await fetch(`https://${server}.gofile.io/uploadfile`, {
+		method: 'POST',
+		body: formData,
+	});
+	const data = await response.json();
+	if (data.status === 'ok') {
+		console.log(data.data)
+		return data.data;
+	} else {
+		throw new Error('Failed to upload file');
+	}
 }
 
-function setCDNAccess(contentId, fieldId) {
-	return fetch(`https://api.gofile.io/contents/${contentId}/directLinks`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				contentId: contentId,
-				token: 'Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S',
-				// option: 'directLink',
-				// value: 'true',
-			}),
-		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.status === 'ok') {
-				const fileUrl = data.data.directLink;
-				const fileType = fileUrl.split(".")[fileUrl.split(".").length - 1].toLowerCase();
-				const previewFile = document.getElementById("preview_" + String(fieldId));
-				document.getElementById("fileUrl_" + String(fieldId)).value = fileUrl;
-				document.getElementById("uploading_" + String(fieldId)).style.display = "none";
-				document.getElementById("success_" + String(fieldId)).style.display = "block";
-				if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'tif'].includes(fileType)) {
-					previewFile.innerHTML = `<img src="${fileUrl}">`;
-				} 
-				if (['mov', 'mp4', 'webm', 'm4v'].includes(fileType)) {
-					previewFile.innerHTML = `<video controls src="${fileUrl}">`;
-				} 
-				if (['mp3', 'wav', 'm4a', 'caf', 'mpeg'].includes(fileType)) {
-					previewFile.innerHTML = `<audio controls src="${fileUrl}">`;
-				} 
-				if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'csv', 'xls', 'xlsx', 'heic'].includes(fileType)) {
-					previewFile.innerHTML = `<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}" width="100%">`
+async function setCDNAccess(contentId) {
+	const response = await fetch(`https://api.gofile.io/contents/${contentId}/directLinks`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S'
+		},
+		body: JSON.stringify({
+			contentId: contentId,
+			token: 'Sj3WyTQQbyScaUddzzi2fBO3uWyrpV2S',
+			// option: 'directLink',
+			// value: 'true',
+		}),
+	});
+	const data = await response.json();
+	if (data.status === 'ok') {
+		console.log(data.data)
+		return data.data;
+	} else {
+		throw new Error('Failed to set CDN access');
+	}
+}
+
+async function convertHeicToJpeg(heicFile, quality = 0.6) {
+	const { HeifDecoder } = await window.libheif();
+
+	const readFile = (file) => new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = (e) => resolve(new Uint8Array(e.target.result));
+		reader.onerror = (error) => reject(error);
+		reader.readAsArrayBuffer(file);
+	});
+
+	const displayFile = async (buffer) => {
+		const decoder = new HeifDecoder();
+		const data = decoder.decode(buffer);
+		const image = data[0];
+		const width = image.get_width();
+		const height = image.get_height();
+
+		const canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+
+		const context = canvas.getContext("2d");
+		const imageData = context.createImageData(width, height);
+		await new Promise((resolve, reject) => {
+			image.display(imageData, (displayData) => {
+				if (!displayData) {
+					return reject(new Error("HEIF processing error"));
 				}
-				
-				return data.data;
-			} else {
-				document.getElementById(`"error_${fieldId}"`).style.display = "block";
-				document.getElementById(`"success_${fieldId}"`).style.display = "none";
-				document.getElementById(`"uploading_${fieldId}"`).style.display = "none";
-				throw new Error('Failed to set CDN access');
-			}
+				resolve();
+			});
 		});
+
+		context.putImageData(imageData, 0, 0);
+		return canvas;
+	};
+
+	const getCanvasImageBlob = (canvas, quality) => new Promise((resolve, reject) => {
+		canvas.toBlob(blob => {
+			if (blob) {
+				return resolve(blob);
+			}
+			return reject(new Error('Failed to convert the image'));
+		}, 'image/jpeg', quality);
+	});
+
+	try {
+		const buffer = await readFile(heicFile);
+		console.time("Conversion time");
+		const canvas = await displayFile(buffer);
+		const blob = await getCanvasImageBlob(canvas, quality);
+		console.timeEnd("Conversion time");
+		return new File([blob], heicFile.name.replace('.heic', '.jpg'), { type: 'image/jpeg' });
+	} catch (error) {
+		console.error("Failed to convert image:", error);
+		throw error;
+	}
 }
 
 
@@ -1054,7 +1138,7 @@ function updateAggregatedDates(fieldId) {
 
 	console.log("Date Array:", dateArray); // Final array debug
 	document.getElementById(`aggregatedDates-${fieldId}`).value = JSON.stringify(dateArray, null, 2);
-	var userOutput = `<b>You have selected the following dates:</b><br><br><table class="multi-date-output-table" style="text-align: left;">` + dateArray.map((date, index) => `<tr><td>${index+1}.</td><td style="font-weight: bold;">${new Date(date.startDateTime).toLocaleString("en-US", {weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "America/New_York"})}</td><td style="font-style: italic;">${new Date(date.startDateTime).toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York"}) + " to " +  new Date(date.endDateTime).toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York"}) == "12:00 AM to 11:59 PM" ? "All Day" : new Date(date.startDateTime).toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York"}) + " to " +  new Date(date.endDateTime).toLocaleString("en-US", {hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York"})}</td>`).join(`</tr>`) + `</table>`;
+	var userOutput = `<b>You have selected the following dates:</b><br><br><table class="multi-date-output-table" style="text-align: left;">` + dateArray.map((date, index) => `<tr><td>${index + 1}.</td><td style="font-weight: bold;">${new Date(date.startDateTime).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "America/New_York" })}</td><td style="font-style: italic;">${new Date(date.startDateTime).toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York" }) + " to " + new Date(date.endDateTime).toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York" }) == "12:00 AM to 11:59 PM" ? "All Day" : new Date(date.startDateTime).toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York" }) + " to " + new Date(date.endDateTime).toLocaleString("en-US", { hour: "numeric", minute: "numeric", hour12: true, timeZone: "America/New_York" })}</td>`).join(`</tr>`) + `</table>`;
 	var userDateOutput = document.getElementById(`userDateOutput-${fieldId}`);
 	userDateOutput.innerHTML = userOutput;
 }
@@ -1065,9 +1149,9 @@ function addDateInput(fieldId) {
 	var dateEntryDiv = document.createElement('div');
 	dateEntryDiv.classList.add("date-entry");
 	dateEntryDiv.classList.add(`f${fieldId}`);
-	dateEntryDiv.setAttribute("id",`dateEntryDiv-${fieldId}`);
-	
-//	dateEntryDiv.className = `date-entry f${fieldId}`;
+	dateEntryDiv.setAttribute("id", `dateEntryDiv-${fieldId}`);
+
+	//	dateEntryDiv.className = `date-entry f${fieldId}`;
 
 	var dateInput = document.createElement('input');
 	dateInput.type = 'text';
@@ -1144,11 +1228,11 @@ function addDateInput(fieldId) {
 	removeButton.type = 'button';
 	removeButton.className = "multi-date-remove-button";
 	removeButton.textContent = 'Remove';
-//	removeButton.onclick = function () {
-//		dateEntryDiv.remove();
-//		updateAggregatedDates(fieldId);
-//	};
-	removeButton.setAttribute("onclick",`document.getElementById("dateEntryDiv-${fieldId}").remove(); updateAggregatedDates("${fieldId}")`);
+	//	removeButton.onclick = function () {
+	//		dateEntryDiv.remove();
+	//		updateAggregatedDates(fieldId);
+	//	};
+	removeButton.setAttribute("onclick", `document.getElementById("dateEntryDiv-${fieldId}").remove(); updateAggregatedDates("${fieldId}")`);
 	removeButtonDiv.appendChild(removeButton);
 
 	dateEntryDiv.appendChild(dateInput);
@@ -1164,10 +1248,10 @@ function addDateInput(fieldId) {
 	dateEntryDiv.appendChild(removeButtonDiv);
 	container.appendChild(dateEntryDiv);
 
-//	dateInput.addEventListener('change', updateAggregatedDates);
-//	startTime.addEventListener('change', updateAggregatedDates);
-//	endTime.addEventListener('change', updateAggregatedDates);
-//	allDayCheckbox.addEventListener('change', updateAggregatedDates);
+	//	dateInput.addEventListener('change', updateAggregatedDates);
+	//	startTime.addEventListener('change', updateAggregatedDates);
+	//	endTime.addEventListener('change', updateAggregatedDates);
+	//	allDayCheckbox.addEventListener('change', updateAggregatedDates);
 }
 
 //document.getElementById('addDate').addEventListener('click', addDateInput);
@@ -1178,99 +1262,99 @@ function addDateInput(fieldId) {
 function getSelectedPaymentOption() {
 	let index = 0;
 	if (document.querySelector(".selected")) {
-		index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length-1] || 0;
+		index = document.querySelector(".selected").id.split("-")[document.querySelector(".selected").id.split("-").length - 1] || 0;
 	}
 
-	const paymentOptions = fields.find(field => field.fieldType === "payment").options.sort((a,b) => b.amount - a.amount);
+	const paymentOptions = fields.find(field => field.fieldType === "payment").options.sort((a, b) => b.amount - a.amount);
 	return paymentOptions[index] || paymentOptions[0];
 }
 
-function selectPaymentOption(index=0) {
-	
-	const paymentOptions = fields.find(field => field.fieldType === "payment").options.sort((a,b) => b.amount - a.amount);
+function selectPaymentOption(index = 0) {
+
+	const paymentOptions = fields.find(field => field.fieldType === "payment").options.sort((a, b) => b.amount - a.amount);
 	const selectedOption = paymentOptions[index];
-	const selectedAmount = (Number.parseFloat(Number.parseFloat(selectedOption.amount).toFixed(2))).toLocaleString("en-US",{style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2})
+	const selectedAmount = (Number.parseFloat(Number.parseFloat(selectedOption.amount).toFixed(2))).toLocaleString("en-US", { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 	document.getElementById("selected-payment-option").value = JSON.stringify(selectedOption);
 	document.querySelectorAll(".payment-plan-container").forEach(element => {
 		element.classList.remove("selected");
 	})
 	document.getElementById(`payment-option-index-${index}`).classList.add("selected");
-	
-	document.getElementById("selectedPaymentMessage").innerHTML=`Click FINISH & PAY to finalize payment for <b>$${(!selectedOption?.installments || !selectedOption.frequency) ? selectedAmount : selectedAmount + "/" + selectedOption.frequency + "</b> (" + selectedOption.installments + " total installments)"}.`;
-	document.getElementById("selectedPaymentPrice").textContent=`($${selectedAmount})`;
-	document.getElementById("selectedPaymentDescription").textContent=`(${selectedOption?.productDescription})`;
-	document.getElementById("selectedPaymentTitle").textContent=`(${selectedOption?.productName})`;
-	document.getElementById("selectedPaymentPlan").textContent=`(${!selectedOption?.frequency ? "One-Time" : selectedOption?.frequency === "day" ? "daily" : selectedOption?.frequency + "ly"})`;
-	document.getElementById("selectedPaymentInstallments").textContent=`(${!selectedOption?.installments ? "None" : selectedOption?.installments})`;
+
+	document.getElementById("selectedPaymentMessage").innerHTML = `Click FINISH & PAY to finalize payment for <b>$${(!selectedOption?.installments || !selectedOption.frequency) ? selectedAmount : selectedAmount + "/" + selectedOption.frequency + "</b> (" + selectedOption.installments + " total installments)"}.`;
+	document.getElementById("selectedPaymentPrice").textContent = `($${selectedAmount})`;
+	document.getElementById("selectedPaymentDescription").textContent = `(${selectedOption?.productDescription})`;
+	document.getElementById("selectedPaymentTitle").textContent = `(${selectedOption?.productName})`;
+	document.getElementById("selectedPaymentPlan").textContent = `(${!selectedOption?.frequency ? "One-Time" : selectedOption?.frequency === "day" ? "daily" : selectedOption?.frequency + "ly"})`;
+	document.getElementById("selectedPaymentInstallments").textContent = `(${!selectedOption?.installments ? "None" : selectedOption?.installments})`;
 
 	return index;
-	
+
 }
 
 
 function customPrompt(question, defaultValue = '') {
-  return new Promise((resolve) => {
-    // Create modal elements
-    const modal = document.createElement('div');
-    const modalContent = document.createElement('div');
-    const questionText = document.createElement('p');
-    const inputField = document.createElement('input');
-	inputField.setAttribute("id","inputField");
-    const okButton = document.createElement('button');
-	okButton.setAttribute("id","okButton");
-    const cancelButton = document.createElement('button');
+	return new Promise((resolve) => {
+		// Create modal elements
+		const modal = document.createElement('div');
+		const modalContent = document.createElement('div');
+		const questionText = document.createElement('p');
+		const inputField = document.createElement('input');
+		inputField.setAttribute("id", "inputField");
+		const okButton = document.createElement('button');
+		okButton.setAttribute("id", "okButton");
+		const cancelButton = document.createElement('button');
 
-    // Set attributes and text
-    modal.setAttribute('id', 'customModal');
-    modalContent.setAttribute('class', 'modal-content');
-    questionText.innerHTML = question;
-    inputField.value = defaultValue;
-    okButton.textContent = 'OK';
-    cancelButton.textContent = 'Cancel';
+		// Set attributes and text
+		modal.setAttribute('id', 'customModal');
+		modalContent.setAttribute('class', 'modal-content');
+		questionText.innerHTML = question;
+		inputField.value = defaultValue;
+		okButton.textContent = 'OK';
+		cancelButton.textContent = 'Cancel';
 
-    // Append elements
-    modalContent.appendChild(questionText);
-    modalContent.appendChild(inputField);
-    modalContent.appendChild(okButton);
-    modalContent.appendChild(cancelButton);
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
+		// Append elements
+		modalContent.appendChild(questionText);
+		modalContent.appendChild(inputField);
+		modalContent.appendChild(okButton);
+		modalContent.appendChild(cancelButton);
+		modal.appendChild(modalContent);
+		document.body.appendChild(modal);
 
-    // Style the modal (you can move this to an external CSS file)
-    modal.style.display = 'block';
-    modal.style.position = 'fixed';
-    modal.style.zIndex = '1';
-    modal.style.left = '0';
-    modal.style.top = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0,0,0,0.4)';
-    modalContent.style.backgroundColor = '#fefefe';
-    modalContent.style.margin = '175px auto';
-    modalContent.style.padding = '20px';
-    modalContent.style.border = '1px solid #888';
-    modalContent.style.width = '80%';
-	modalContent.style.borderRadius = '15px';
-	modalContent.style.boxShadow = '0px 6px 25px rgba(0,0,0,0.2)';
+		// Style the modal (you can move this to an external CSS file)
+		modal.style.display = 'block';
+		modal.style.position = 'fixed';
+		modal.style.zIndex = '1';
+		modal.style.left = '0';
+		modal.style.top = '0';
+		modal.style.width = '100%';
+		modal.style.height = '100%';
+		modal.style.backgroundColor = 'rgba(0,0,0,0.4)';
+		modalContent.style.backgroundColor = '#fefefe';
+		modalContent.style.margin = '175px auto';
+		modalContent.style.padding = '20px';
+		modalContent.style.border = '1px solid #888';
+		modalContent.style.width = '80%';
+		modalContent.style.borderRadius = '15px';
+		modalContent.style.boxShadow = '0px 6px 25px rgba(0,0,0,0.2)';
 
-	document.getElementById("inputField").addEventListener("keyup", function(event) {
-		event.preventDefault();
-		if (event.keyCode === 13) {
-			document.getElementById("okButton").click();
-		}
-	})
+		document.getElementById("inputField").addEventListener("keyup", function (event) {
+			event.preventDefault();
+			if (event.keyCode === 13) {
+				document.getElementById("okButton").click();
+			}
+		})
 
-    // Event listeners
-    okButton.onclick = () => {
-      resolve(inputField.value.trim());
-      document.body.removeChild(modal);
-    };
+		// Event listeners
+		okButton.onclick = () => {
+			resolve(inputField.value.trim());
+			document.body.removeChild(modal);
+		};
 
-    cancelButton.onclick = () => {
-      resolve(null);
-      document.body.removeChild(modal);
-    };
-  });
+		cancelButton.onclick = () => {
+			resolve(null);
+			document.body.removeChild(modal);
+		};
+	});
 }
 
 
