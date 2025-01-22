@@ -776,10 +776,10 @@ const uploadFile = async (fieldId) => {
 			contentId: uploadResponse.id
 		}, '*'); // Replace '*' with your domain for security
 
-		fileUrl = encodeURI(cdnAccessResponse.directLink.toLowerCase());
-		const fileType = fileUrl.split(".")[fileUrl.split(".").length - 1];
+		fileUrl = cdnAccessResponse.directLink;
+		const fileType = fileUrl?.split(".")?.[fileUrl?.split(".").length - 1];
 
-		console.log("File URL:", fileUrl); // Logging file URL
+		console.log("File URL:", encodeURI(fileUrl)); // Logging file URL
 
 		// Handle images
 		if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'tif'].includes(fileType)) {
@@ -792,7 +792,7 @@ const uploadFile = async (fieldId) => {
 			document.getElementById("preview_" + String(fieldId)).innerHTML = `<audio controls src="${fileUrl}"></audio>`;
 		}
 		if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'csv', 'xls', 'xlsx'].includes(fileType)) {
-			document.getElementById("preview_" + String(fieldId)).innerHTML = `<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=${fileUrl}" width="100%">`
+			document.getElementById("preview_" + String(fieldId)).innerHTML = `<embed src="https://drive.google.com/viewerng/viewer?embedded=true&url=${encodeURIComponent(fileUrl)}" width="100%">`
 		}
 		document.getElementById("uploading_" + String(fieldId)).style.display = "none";
 		document.getElementById("success_" + String(fieldId)).style.display = "block";
