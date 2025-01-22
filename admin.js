@@ -973,7 +973,7 @@ function handleSubmit() {
 	console.log(JSON.stringify(formData));
 
 	if (validateForm() == true) {
-		window.parent.postMessage(formData, '*');
+		window.parent.postMessage({ type: "form_submit", data: formData }, '*');
 		console.log("Form Submit Successful!");
 	} else {
 		alert("One or more required fields haven't been filled out yet.");
