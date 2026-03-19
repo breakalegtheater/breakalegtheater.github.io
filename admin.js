@@ -782,7 +782,7 @@ const uploadFile = async (fieldId) => {
 		console.log("File URL:", encodeURI(fileUrl)); // Logging file URL
 
 		try {
-			document.getElementById(`fileUrl_${field.fieldId}`).value = encodeURI(fileUrl);
+			document.getElementById(`fileUrl_${fieldId}`).value = encodeURI(fileUrl);
 		}
 		catch (e) {
 			console.error(e);
