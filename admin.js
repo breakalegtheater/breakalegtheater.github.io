@@ -781,6 +781,14 @@ const uploadFile = async (fieldId) => {
 
 		console.log("File URL:", encodeURI(fileUrl)); // Logging file URL
 
+		try {
+			document.getElementById(`fileUrl_${field.fieldId}`).value = encodeURI(fileUrl);
+		}
+		catch (e) {
+			console.error(e);
+		}
+		
+
 		// Handle images
 		if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'tif'].includes(fileType)) {
 			document.getElementById("preview_" + String(fieldId)).innerHTML = `<img src="${fileUrl}">`;
@@ -1271,7 +1279,7 @@ function getSelectedPaymentOption() {
 
 function selectPaymentOption(index = 0) {
 
-	const paymentOptions = fields.find(field => field.fieldType === "payment").options.sort((a, b) => b.amount - a.amount);
+	const paymentOptions = fields?.find(field => field?.fieldType === "payment")?.options?.sort((a, b) => b?.amount - a?.amount);
 	const selectedOption = paymentOptions[index];
 	const selectedAmount = (Number.parseFloat(Number.parseFloat(selectedOption.amount).toFixed(2))).toLocaleString("en-US", { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 })
 	document.getElementById("selected-payment-option").value = JSON.stringify(selectedOption);
